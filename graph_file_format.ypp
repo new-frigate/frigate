@@ -1,0 +1,39 @@
+%{
+#include <stdio.h>
+
+extern int yylex(void);
+
+
+void yyerror(const char *str);
+
+%}
+
+%union
+{
+	char *comment_str;
+}
+
+%token <comment_str> COMMENT_STRING;
+
+%%
+graph:	comments "<graph>" entry_graph "</graph>" comments       
+     ;
+
+comments:
+			| comment comments
+        ;
+
+comment: '#' COMMENT_STRING '\n'
+        | '\n'
+       ;
+
+entry_graph: "hello"
+           ;
+
+%%
+
+void yyerror(const char *err_str)
+{
+	printf("err: %s\n",err_str);
+}
+

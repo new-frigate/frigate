@@ -1,7 +1,9 @@
 %{
-#include <stdio.h>
 
-extern int yylex(void);
+#include <stdio.h>
+#include "graph_file_format.tab.hpp"
+
+extern int yylex(YYSTYPE *value,YYLTYPE *location);
 
 
 void yyerror(const char *str);
@@ -13,17 +15,20 @@ void yyerror(const char *str);
 	char *comment_str;
 }
 
+%locations
+%pure-parser
+
 %token <comment_str> COMMENT_STRING;
 
 %%
-graph:	comments "<graph>" entry_graph "</graph>" comments       
+graph:	comments "<graph>" { printf("graph world \n"); } entry_graph "</graph>" comments       
      ;
 
 comments:
 			| comment comments
         ;
 
-comment: '#' COMMENT_STRING '\n'
+comment: '#' COMMENT_STRING '\n' { printf("Comment string \n"); }
         | '\n'
        ;
 

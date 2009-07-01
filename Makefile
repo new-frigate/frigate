@@ -5,11 +5,11 @@ graph_file_format.tab.cpp: graph_file_format.ypp
 
 
 lex.yy.c: graph_file_format.l
-	flex $^
+	flex  --bison-bridge --bison-locations -d $^
 
 
 parser: graph_file_format.tab.cpp main.cpp lex.yy.c
-	g++ -o $@ $^
+	g++ -g -DYYDEBUG=1 -o $@ $^
 
 clean:
 	rm -rf graph_file_format.tab.cpp lex.yy.c graph_file_format.tab.hpp parser

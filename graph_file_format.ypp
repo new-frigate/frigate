@@ -24,7 +24,7 @@ void yyerror(const char *str);
 %token <str> HELLO;
 
 %%
-graph:	comments  GRAPH_BEGIN_TAG { printf("graph world \n"); } entry_graph  GRAPH_BEGIN_TAG comments       
+graph:	comments  GRAPH_BEGIN_TAG { printf("graph world \n"); } entry_graph  GRAPH_END_TAG comments       
      ;
 
 comments:

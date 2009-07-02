@@ -12,27 +12,27 @@ void yyerror(const char *str);
 
 %union
 {
-	char *comment_str;
+	char *str;
 }
 
 %locations
 %pure-parser
 
-%token <comment_str> COMMENT_STRING;
+%token <str> COMMENT_STRING;
+%token <str> GRAPH_BEGIN_TAG;
+%token <str> GRAPH_END_TAG;
+%token <str> HELLO;
 
 %%
-graph:	comments "<graph>" { printf("graph world \n"); } entry_graph "</graph>" comments       
+graph:	comments  GRAPH_BEGIN_TAG { printf("graph world \n"); } entry_graph  GRAPH_BEGIN_TAG comments       
      ;
 
 comments:
-			| comment comments
+			| comments COMMENT_STRING
+			| '\n'
         ;
 
-comment: '#' COMMENT_STRING '\n' { printf("Comment string \n"); }
-        | '\n'
-       ;
-
-entry_graph: "hello"
+entry_graph: HELLO
            ;
 
 %%

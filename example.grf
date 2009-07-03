@@ -1,6 +1,10 @@
+
+
 # hello
 # hello
-<graph>hello</graph># gfghfghfg
+<graph>
+version=1.0
+</graph># gfghfghfg
 # hello
 # ehlo
 

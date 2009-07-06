@@ -33,9 +33,29 @@ void yyerror(const char *str);
 %token WHITE_SPACE;
 %token POSITIVE_FLOAT_POINT_VALUE;
 %token VERSION_KEY_WORD;
+%token MAIN_SUBGRAPH_KEY_WORD;
+%token STRING_VALUE;
+%token CODE_CLAUSE;
+
+%token HEADER_KEY_WORD;
+%token HEADER_BEGIN_TAG;
+%token HEADER_END_TAG;
+
+%token ROOT_KEY_WORD;
+%token ROOT_BEGIN_TAG;
+%token ROOT_END_TAG;
+
+%token TAIL_KEY_WORD;
+%token TAIL_BEGIN_TAG;
+%token TAIL_END_TAG;
+
+%token NAME_KEY_WORD;
+%token SUBGRAPH_BEGIN_TAG;
+%token SUBGRAPH_END_TAG;
+
 
 %%
-graph:	comments  GRAPH_BEGIN_TAG { printf("graph world \n"); } entry_graph  GRAPH_END_TAG comments;
+graph:	comments  GRAPH_BEGIN_TAG  comments graph_declarations comments main_subgraph comments entry_graph comments GRAPH_END_TAG comments;
      ;
 
 comments:
@@ -43,14 +63,43 @@ comments:
 			| comments WHITE_SPACE
         ;
 
+graph_declarations: version_clause 
+                  |  graph_declarations header_clause 
+                  |  graph_declarations root_clause   
+                  |  graph_declarations tail_clause   
+                  ;
+
+header_clause:   comments HEADER_BEGIN_TAG comments HEADER_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE comments HEADER_END_TAG
+               | comments HEADER_BEGIN_TAG comments CODE_CLAUSE comments HEADER_END_TAG { printf("Code for header: \"%s\"\n",$4); }
+             ;
+
+root_clause:     comments ROOT_BEGIN_TAG comments ROOT_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE comments ROOT_END_TAG 
+               | comments ROOT_BEGIN_TAG comments CODE_CLAUSE comments ROOT_END_TAG { printf("Code for root: \"%s\"\n",$4); }
+             ;
+
+tail_clause:     comments TAIL_BEGIN_TAG comments TAIL_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE comments TAIL_END_TAG
+               | comments TAIL_BEGIN_TAG comments CODE_CLAUSE comments TAIL_END_TAG { printf("Code for tail: \"%s\"\n",$4); }
+             ;
+
+
+
 entry_graph: 
-			 comments  version_clause comments
-			| 
+			| entry_graph  comments  subgraph            
            ;
 
-version_clause: 
-                VERSION_KEY_WORD  comments '=' comments POSITIVE_FLOAT_POINT_VALUE /* {printf("OK\n\n\n\n");}*/  WHITE_SPACE { printf("%s\n",$5); double val; val=strtod($5,NULL); printf("version is %f\n",val); }
+version_clause: VERSION_KEY_WORD  comments '=' comments POSITIVE_FLOAT_POINT_VALUE /* {printf("OK\n\n\n\n");}*/  WHITE_SPACE { printf("%s\n",$5); double val; val=strtod($5,NULL); printf("version is %f\n",val); }
               ;
+
+main_subgraph:  /* If Empty then the first subgraph in graph file will be choisen as main */
+               | MAIN_SUBGRAPH_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE { printf("main subgraph is '%s'\n",$5); }
+             ; 
+
+subgraph: SUBGRAPH_BEGIN_TAG comments name_clause comments SUBGRAPH_END_TAG
+        ;
+
+name_clause: NAME_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE
+           ;
+
 %%
 
 void yyerror(const char *err_str)

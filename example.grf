@@ -3,7 +3,46 @@
 # hello
 # hello
 <graph>
+#
+# Version of Graph format
+#
 version=1.0
+
+<header>
+@
+       msdl;jsfgjdfglkjfsl;gkhj
+       g,fsg,hjdf;glkjf;lgjflgkhj
+       g;lhdfg;lhjkdf;ljfsd;khlj
+      \@
+      \@
+       ffghdfgfghfg
+       fghdfghfgh
+@
+</header>
+
+<root>
+    root="ddd"
+</root>
+
+<tail>
+    @
+Now it is code
+fghdfghdfghf
+fghdfghf
+ @
+</tail>
+
+
+main_subgraph="hello \"world\""
+
+<subgraph>
+name # hello
+ = # dddd
+"world"
+#
+# beee
+#
+</subgraph>
 </graph># gfghfghfg
 # hello
 # ehlo

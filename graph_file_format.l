@@ -1,4 +1,5 @@
 %{
+#define YYSTYPE char*
 #include "graph_file_format.tab.hpp"
 #include <stdlib.h>
 %}
@@ -15,7 +16,11 @@ NUMBER [0-9]+
 "</graph>"                     { return GRAPH_END_TAG;              }
 "hello"                        { return HELLO;                      }
 "version"                      { return VERSION_KEY_WORD;           }
-{NUMBER}\.{NUMBER}             { printf("value: '%s'\n",yytext); return POSITIVE_FLOAT_POINT_VALUE; }
+{NUMBER}\.{NUMBER}             { 
+                                    printf("value: '%s'\n",yytext);
+                                    *yylval=yytext;
+                                    return POSITIVE_FLOAT_POINT_VALUE; 
+                               }
 [ \t\n\r]+                     { return WHITE_SPACE;                }
 .                              { return yytext[0]; /* Any Symb */   }
 %%

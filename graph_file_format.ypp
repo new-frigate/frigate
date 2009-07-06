@@ -1,6 +1,11 @@
 %{
 
 #include <stdio.h>
+
+
+#define YYSTYPE char*
+
+
 #include "graph_file_format.tab.hpp"
 
 extern int yylex(YYSTYPE *value,YYLTYPE *location);
@@ -10,21 +15,25 @@ void yyerror(const char *str);
 
 %}
 
+/*
 %union
 {
 	char *str;
 }
+*/
+
 
 %locations
 %pure-parser
 
-%token <str> COMMENT_STRING;
-%token <str> GRAPH_BEGIN_TAG;
-%token <str> GRAPH_END_TAG;
-%token <str> HELLO;
-%token <str> WHITE_SPACE;
-%token <str> POSITIVE_FLOAT_POINT_VALUE;
-%token <str> VERSION_KEY_WORD;
+%token COMMENT_STRING;
+%token GRAPH_BEGIN_TAG;
+%token GRAPH_END_TAG;
+%token HELLO;
+%token WHITE_SPACE;
+%token POSITIVE_FLOAT_POINT_VALUE;
+%token VERSION_KEY_WORD;
+
 %%
 graph:	comments  GRAPH_BEGIN_TAG { printf("graph world \n"); } entry_graph  GRAPH_END_TAG comments;
      ;
@@ -40,7 +49,7 @@ entry_graph:
            ;
 
 version_clause: 
-                VERSION_KEY_WORD  comments '=' comments POSITIVE_FLOAT_POINT_VALUE  {printf("OK\n\n\n\n");} WHITE_SPACE { printf("%s\n",$5); double val; val=strtod($5,NULL); printf("version is %f\n",val); }
+                VERSION_KEY_WORD  comments '=' comments POSITIVE_FLOAT_POINT_VALUE /* {printf("OK\n\n\n\n");}*/  WHITE_SPACE { printf("%s\n",$5); double val; val=strtod($5,NULL); printf("version is %f\n",val); }
               ;
 %%
 

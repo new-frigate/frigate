@@ -17,7 +17,7 @@ NUMBER [0-9]+
 "version"                      { return VERSION_KEY_WORD;           }
 {NUMBER}\.{NUMBER}             { printf("value: '%s'\n",yytext); return POSITIVE_FLOAT_POINT_VALUE; }
 [ \t\n\r]+                     { return WHITE_SPACE;                }
-. /* Any Symb */
+.                              { return yytext[0]; /* Any Symb */   }
 %%
 
 int yywrap(void){return 1;}

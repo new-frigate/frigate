@@ -94,11 +94,42 @@ main_subgraph:  /* If Empty then the first subgraph in graph file will be choise
                | MAIN_SUBGRAPH_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE { printf("main subgraph is '%s'\n",$5); }
              ; 
 
-subgraph: SUBGRAPH_BEGIN_TAG comments name_clause comments SUBGRAPH_END_TAG
+subgraph: SUBGRAPH_BEGIN_TAG comments name_clause comments condition_clause comments subgraph_entry comments SUBGRAPH_END_TAG
         ;
 
 name_clause: NAME_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE
            ;
+
+condition_clause: CONDITION_KEY_WORD comments '=' comments CODE_CLAUSE WHITE_SPACE
+                ;
+
+subgraph_entry:
+                | subgraph_entry comments vertex  
+		| subgraph_entry comments internal_edge 
+		| subgraph_entry comments external_edge
+              ;
+
+vertex: VERTEX_BEGIN_TAG comments name_clause comments vertex_entry comments VERTEX_END_TAG
+      ;
+
+vertex_entry:   vertex_template_name_clause
+              | vertex_body_clause
+              | code_volume_clause comments vertex_entry
+              | io_volume_clause comments vertex_entry          
+            ; 
+
+vertex_template_name_clause: TEMPLATE_NAME_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE
+                           ;
+
+
+
+
+internal_edge:
+             ;
+
+external_edge:
+             ;
+
 
 %%
 

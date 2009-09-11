@@ -32,14 +32,14 @@ NUMBER [0-9]+
                                     *yylval=yytext;
                                     return POSITIVE_FLOAT_POINT_VALUE; 
                                }
-\"([^"]|\\\")*(\")             {  /* This rule parsing some like:
+\"([^"\\]|\\.)*(\")            {  /* This rule parsing some like:
                                           "asdasds \"aaa\" bbvnb"
                                    */ 
                                     *yylval=&(yytext[1]);
 									yytext[yyleng-1]='\0';
                                     return STRING_VALUE;  
                                }
-(@)([^@]|\\@)*(@)              {  /* This rule parse code for graph */
+(@)([^@\\]|\\.)*(@)            {  /* This rule parse code for graph */
                                   *yylval=&(yytext[1]);
                                   yytext[yyleng-1]='\0';
                                   return CODE_CLAUSE;

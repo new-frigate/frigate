@@ -16,6 +16,12 @@ NUMBER [0-9]+
 "</root>"                      { return ROOT_END_TAG;               }
 "<tail>"                       { return TAIL_BEGIN_TAG;             }
 "</tail>"                      { return TAIL_END_TAG;               }
+"<vertex>"                     { return VERTEX_BEGIN_TAG;           }
+"</vertex>"                    { return VERTEX_END_TAG;             }
+"<code>"                       { return CODE_BEGIN_TAG;             }
+"</code>"                      { return CODE_END_TAG;               }
+"<exchange>"                   { return EXCHANGE_BEGIN_TAG;         }
+"</exchange>"                  { return EXCHANGE_END_TAG;           }
 "<subgraph>"                   { return SUBGRAPH_BEGIN_TAG;         }
 "</subgraph>"                  { return SUBGRAPH_END_TAG;           }
 "version"                      { return VERSION_KEY_WORD;           }
@@ -24,6 +30,8 @@ NUMBER [0-9]+
 "root"                         { return ROOT_KEY_WORD;              }
 "tail"                         { return TAIL_KEY_WORD;              }
 "name"                         { return NAME_KEY_WORD;              }
+"template"                     { return TEMPLATE_NAME_KEY_WORD;     }
+"condition"                    { return CONDITION_KEY_WORD;         }
 (#){CSYM}*(\n)                 {  /* printf("Recognized text is: '%s'\n",yytext);	*/		
 			                      return COMMENT_STRING; 
                                }
@@ -36,7 +44,7 @@ NUMBER [0-9]+
                                           "asdasds \"aaa\" bbvnb"
                                    */ 
                                     *yylval=&(yytext[1]);
-									yytext[yyleng-1]='\0';
+                                    yytext[yyleng-1]='\0';
                                     return STRING_VALUE;  
                                }
 (@)([^@\\]|\\.)*(@)            {  /* This rule parse code for graph */

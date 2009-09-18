@@ -53,6 +53,18 @@ void yyerror(const char *str);
 %token SUBGRAPH_BEGIN_TAG;
 %token SUBGRAPH_END_TAG;
 
+%token CONDITION_KEY_WORD;
+
+%token VERTEX_BEGIN_TAG;
+%token VERTEX_END_TAG;
+
+%token TEMPLATE_NAME_KEY_WORD;
+
+%token CODE_BEGIN_TAG;
+%token CODE_END_TAG;
+
+%token EXCHANGE_BEGIN_TAG;
+%token EXCHANGE_END_TAG;
 
 %%
 graph:	comments  GRAPH_BEGIN_TAG  comments graph_declarations comments main_subgraph comments entry_graph comments GRAPH_END_TAG comments;
@@ -112,17 +124,22 @@ subgraph_entry:
 vertex: VERTEX_BEGIN_TAG comments name_clause comments vertex_entry comments VERTEX_END_TAG
       ;
 
-vertex_entry:   vertex_template_name_clause
+vertex_entry:   vertex_template_name_clause 
               | vertex_body_clause
-              | code_volume_clause comments vertex_entry
-              | io_volume_clause comments vertex_entry          
             ; 
 
 vertex_template_name_clause: TEMPLATE_NAME_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE
                            ;
 
+vertex_body_clause: 
+                    | code_volume_clause comments vertex_body_clause
+                    | exchange_clause   comments vertex_body_clause
+                  ;
 
 
+code_volume_clause: CODE_BEGIN_TAG comments CODE_END_TAG;
+
+exchange_clause: EXCHANGE_BEGIN_TAG comments EXCHANGE_END_TAG;
 
 internal_edge:
              ;

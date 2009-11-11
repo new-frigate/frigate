@@ -58,10 +58,22 @@ void yyerror(const char *str);
 %token VERTEX_BEGIN_TAG;
 %token VERTEX_END_TAG;
 
+%token INTERNAL_EDGE_BEGIN_TAG;
+%token INTERNAL_EDGE_END_TAG;
+
+%token EXTERNAL_EDGE_BEGIN_TAG;
+%token EXTERNAL_EDGE_END_TAG;
+
+
+
 %token TEMPLATE_NAME_KEY_WORD;
 
 %token CODE_BEGIN_TAG;
 %token CODE_END_TAG;
+
+%token BLOCK_BEGIN_TAG;
+%token BLOCK_END_TAG;
+%token FILE_KEY_WORD;
 
 %token EXCHANGE_BEGIN_TAG;
 %token EXCHANGE_END_TAG;
@@ -121,7 +133,7 @@ subgraph_entry:
 		| subgraph_entry comments external_edge
               ;
 
-vertex: VERTEX_BEGIN_TAG comments name_clause comments vertex_entry comments VERTEX_END_TAG
+vertex: VERTEX_BEGIN_TAG comments name_clause comments vertex_entry comments VERTEX_END_TAG 
       ;
 
 vertex_entry:   vertex_template_name_clause 
@@ -137,15 +149,27 @@ vertex_body_clause:
                   ;
 
 
-code_volume_clause: CODE_BEGIN_TAG comments CODE_END_TAG;
+code_volume_clause: CODE_BEGIN_TAG comments code_volume_weight_clause comments io_volume_weight_clause comments code_block_clause comments CODE_END_TAG
+                  ;
+
+code_block_clause: BLOCK_BEGIN_TAG comments CODE_CLAUSE comments BLOCK_END_TAG
+                 | BLOCK_BEGIN_TAG comments FILE_KEY_WORD comments '=' comments STRING_VALUE comments BLOCK_END_TAG
+                 ;
+
+io_volume_weight_clause:
+                       ;
+
+code_volume_weight_clause:
+                         ;
 
 exchange_clause: EXCHANGE_BEGIN_TAG comments EXCHANGE_END_TAG;
 
-internal_edge:
+internal_edge: INTERNAL_EDGE_BEGIN_TAG comments INTERNAL_EDGE_END_TAG
+             ; 
+
+external_edge: EXTERNAL_EDGE_BEGIN_TAG comments EXTERNAL_EDGE_END_TAG
              ;
 
-external_edge:
-             ;
 
 
 %%

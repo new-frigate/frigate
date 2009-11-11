@@ -18,8 +18,14 @@ NUMBER [0-9]+
 "</tail>"                      { return TAIL_END_TAG;               }
 "<vertex>"                     { return VERTEX_BEGIN_TAG;           }
 "</vertex>"                    { return VERTEX_END_TAG;             }
+"<internal_edge>"              { return INTERNAL_EDGE_BEGIN_TAG;    }
+"</internal_edge>"             { return INTERNAL_EDGE_END_TAG;      }
+"<external_edge>"              { return EXTERNAL_EDGE_BEGIN_TAG;    }
+"</external_edge>"             { return EXTERNAL_EDGE_END_TAG;      }
 "<code>"                       { return CODE_BEGIN_TAG;             }
 "</code>"                      { return CODE_END_TAG;               }
+"<block>"                      { return BLOCK_BEGIN_TAG;            }
+"</block>"                     { return BLOCK_END_TAG;              }
 "<exchange>"                   { return EXCHANGE_BEGIN_TAG;         }
 "</exchange>"                  { return EXCHANGE_END_TAG;           }
 "<subgraph>"                   { return SUBGRAPH_BEGIN_TAG;         }
@@ -32,6 +38,7 @@ NUMBER [0-9]+
 "name"                         { return NAME_KEY_WORD;              }
 "template"                     { return TEMPLATE_NAME_KEY_WORD;     }
 "condition"                    { return CONDITION_KEY_WORD;         }
+"file"                         { return FILE_KEY_WORD;              }
 (#){CSYM}*(\n)                 {  /* printf("Recognized text is: '%s'\n",yytext);	*/		
 			                      return COMMENT_STRING; 
                                }

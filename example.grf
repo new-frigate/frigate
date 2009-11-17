@@ -43,9 +43,9 @@ name # hello
 # beee
 #
 
-<vertex>
-name="abba"
-</vertex>
+#<vertex>
+#name="abba"
+#</vertex>
 
 </subgraph>
 </graph># gfghfghfg

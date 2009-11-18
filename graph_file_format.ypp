@@ -79,7 +79,7 @@ void yyerror(const char *str);
 %token EXCHANGE_END_TAG;
 
 %%
-graph:	comments  GRAPH_BEGIN_TAG  comments graph_declarations comments main_subgraph comments entry_graph comments GRAPH_END_TAG comments;
+graph:  comments  GRAPH_BEGIN_TAG  comments graph_declarations comments main_subgraph comments entry_graph comments GRAPH_END_TAG comments;
      ;
 
 comments:
@@ -173,6 +173,7 @@ external_edge: EXTERNAL_EDGE_BEGIN_TAG comments EXTERNAL_EDGE_END_TAG
 
 
 %%
+
 
 void yyerror(const char *err_str)
 {

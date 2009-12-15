@@ -81,6 +81,9 @@ void my_yyerror(struct YYLTYPE *locp,const char *str);
 %token BLOCK_END_TAG;
 %token FILE_KEY_WORD;
 
+%token  IO_VOLUME_KEY_WORD;
+%token  CODE_VOLUME_KEY_WORD;
+
 %token EXCHANGE_BEGIN_TAG;
 %token EXCHANGE_END_TAG;
 
@@ -138,37 +141,42 @@ condition_clause: CONDITION_KEY_WORD comments '=' comments CODE_CLAUSE WHITE_SPA
 
 subgraph_entry:
                 | subgraph_entry comments vertex  
-		| subgraph_entry comments internal_edge 
-		| subgraph_entry comments external_edge
+                | subgraph_entry comments internal_edge 
+                | subgraph_entry comments external_edge
               ;
 
-vertex: VERTEX_BEGIN_TAG comments name_clause comments vertex_entry comments VERTEX_END_TAG 
+vertex: VERTEX_BEGIN_TAG comments name_clause comments vertex_entry VERTEX_END_TAG 
       ;
 
-vertex_entry:   vertex_template_name_clause 
+vertex_entry:   vertex_template_name_clause comments
               | vertex_body_clause
             ; 
 
 vertex_template_name_clause: TEMPLATE_NAME_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE
                            ;
 
-vertex_body_clause: 
+vertex_body_clause:   code_volume_clause comments
+                    | exchange_clause    comments
                     | code_volume_clause comments vertex_body_clause
-                    | exchange_clause   comments vertex_body_clause
+                    | exchange_clause    comments vertex_body_clause
                   ;
 
 
-code_volume_clause: CODE_BEGIN_TAG comments code_volume_weight_clause comments io_volume_weight_clause comments code_block_clause comments CODE_END_TAG
+code_volume_clause: CODE_BEGIN_TAG  comments code_declarations code_block_clause comments CODE_END_TAG
                   ;
-
-code_block_clause: BLOCK_BEGIN_TAG comments CODE_CLAUSE comments BLOCK_END_TAG
-                 | BLOCK_BEGIN_TAG comments FILE_KEY_WORD comments '=' comments STRING_VALUE comments BLOCK_END_TAG
+code_declarations: 
+                 | code_volume_weight_clause  comments code_declarations
+                 | io_volume_weight_clause    comments  code_declarations
                  ;
 
-io_volume_weight_clause:
+code_block_clause: CODE_CLAUSE WHITE_SPACE
+                 | FILE_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE
+                 ;
+
+io_volume_weight_clause: IO_VOLUME_KEY_WORD comments '=' comments CODE_CLAUSE WHITE_SPACE
                        ;
 
-code_volume_weight_clause:
+code_volume_weight_clause: CODE_VOLUME_KEY_WORD comments '=' comments CODE_CLAUSE WHITE_SPACE 
                          ;
 
 exchange_clause: EXCHANGE_BEGIN_TAG comments EXCHANGE_END_TAG;

@@ -43,11 +43,41 @@ name # hello
 # beee
 #
 
-#condition = @ 1 @
+condition = @ 1 @
 
-#<vertex>
-#name="abba"
-#</vertex>
+<vertex>
+name="abba"
+template = "generic"
+</vertex>
+
+<vertex>
+name="bbb"
+
+<code>
+file="hello"
+</code>
+
+<code>
+@
+ if(a==0)
+ {
+  a=10;
+ }
+@
+</code>
+
+<code>
+io_volume  = @ 0       @
+code_volume= @ abc*bca @
+@
+ if(a==0)
+ {
+  a=10;
+ }
+@
+</code>
+
+</vertex> 
 
 </subgraph>
 </graph># gfghfghfg

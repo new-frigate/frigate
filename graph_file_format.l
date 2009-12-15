@@ -176,6 +176,21 @@ NUMBER [0-9]+
                                    return VERSION_KEY_WORD;
                                             
                                }
+"io_volume"                    {
+                                  yylloc->first_line=yylloc->last_line;
+                                  yylloc->first_column=yylloc->last_column;
+                                  yylloc->last_column+=strlen(yytext);
+                                   return IO_VOLUME_KEY_WORD;
+                                            
+                               }
+"code_volume"                    {
+                                  yylloc->first_line=yylloc->last_line;
+                                  yylloc->first_column=yylloc->last_column;
+                                  yylloc->last_column+=strlen(yytext);
+                                   return CODE_VOLUME_KEY_WORD;
+                                            
+                               }
+
 "main_subgraph"                {
                                   yylloc->first_line=yylloc->last_line;
                                   yylloc->first_column=yylloc->last_column;

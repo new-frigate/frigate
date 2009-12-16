@@ -4,7 +4,7 @@
 
 
 #define YYSTYPE char*
-
+#define YYPARSE_PARAM output_param
 
 #include "graph_file_format.tab.hpp"
 
@@ -35,7 +35,6 @@ void my_yyerror(struct YYLTYPE *locp,const char *str);
 %token COMMENT_STRING;
 %token GRAPH_BEGIN_TAG;
 %token GRAPH_END_TAG;
-%token HELLO;
 %token WHITE_SPACE;
 %token POSITIVE_FLOAT_POINT_VALUE;
 %token VERSION_KEY_WORD;
@@ -64,14 +63,6 @@ void my_yyerror(struct YYLTYPE *locp,const char *str);
 %token VERTEX_BEGIN_TAG;
 %token VERTEX_END_TAG;
 
-%token INTERNAL_EDGE_BEGIN_TAG;
-%token INTERNAL_EDGE_END_TAG;
-
-%token EXTERNAL_EDGE_BEGIN_TAG;
-%token EXTERNAL_EDGE_END_TAG;
-
-
-
 %token TEMPLATE_NAME_KEY_WORD;
 
 %token CODE_BEGIN_TAG;
@@ -86,6 +77,29 @@ void my_yyerror(struct YYLTYPE *locp,const char *str);
 
 %token EXCHANGE_BEGIN_TAG;
 %token EXCHANGE_END_TAG;
+
+%token SEND_BEGIN_TAG;
+%token SEND_END_TAG;
+
+%token RECV_BEGIN_TAG;
+%token RECV_END_TAG;
+
+%token FRAGMENT_BEGIN_TAG;
+%token FRAGMENT_END_TAG;
+
+%token VARIABLE_KEY_WORD;
+%token TYPE_KEY_WORD;
+
+%token LEFT_KEY_WORD;
+%token RIGHT_KEY_WORD;
+
+%token INTERNAL_EDGE_BEGIN_TAG;
+%token INTERNAL_EDGE_END_TAG;
+
+%token EXTERNAL_EDGE_BEGIN_TAG;
+%token EXTERNAL_EDGE_END_TAG;
+
+
 
 %%
 graph:  comments  GRAPH_BEGIN_TAG  comments graph_declarations comments main_subgraph comments entry_graph comments GRAPH_END_TAG comments;
@@ -148,11 +162,11 @@ subgraph_entry:
 vertex: VERTEX_BEGIN_TAG comments name_clause comments vertex_entry VERTEX_END_TAG 
       ;
 
-vertex_entry:   vertex_template_name_clause comments
+vertex_entry:   template_name_clause comments
               | vertex_body_clause
             ; 
 
-vertex_template_name_clause: TEMPLATE_NAME_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE
+template_name_clause: TEMPLATE_NAME_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE
                            ;
 
 vertex_body_clause:   code_volume_clause comments
@@ -179,7 +193,56 @@ io_volume_weight_clause: IO_VOLUME_KEY_WORD comments '=' comments CODE_CLAUSE WH
 code_volume_weight_clause: CODE_VOLUME_KEY_WORD comments '=' comments CODE_CLAUSE WHITE_SPACE 
                          ;
 
-exchange_clause: EXCHANGE_BEGIN_TAG comments EXCHANGE_END_TAG;
+exchange_clause: EXCHANGE_BEGIN_TAG exchange_entry comments EXCHANGE_END_TAG
+               ;
+
+exchange_entry:
+              | comments send_clause exchange_entry
+              | comments recv_clause exchange_entry
+              ;
+
+send_clause: SEND_BEGIN_TAG comments edge_entry comments  SEND_END_TAG
+           ;
+
+recv_clause: RECV_BEGIN_TAG edge_entry comments  RECV_END_TAG
+           ;
+
+edge_entry: name_clause comments edge_type_clause comments edge_code_clause 
+           ;
+
+edge_code_clause: template_name_clause
+                | edge_variables_fragment edge_variables_fragments
+                ;
+
+edge_variables_fragments:
+                        | comments edge_variables_fragment edge_variables_fragments
+                        ;
+
+edge_variables_fragment: 
+                         FRAGMENT_BEGIN_TAG 
+                            comments 
+                            variable_name_clause 
+                            comments 
+                            variable_type_clause 
+                            comments  
+                            left_fragment_border_clause
+                            comments
+                            right_fragment_border_clause
+                            comments
+                         FRAGMENT_END_TAG;
+
+
+variable_name_clause: VARIABLE_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE;
+
+variable_type_clause: TYPE_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE;
+
+left_fragment_border_clause:  LEFT_KEY_WORD  comments '=' comments CODE_CLAUSE WHITE_SPACE;
+right_fragment_border_clause: RIGHT_KEY_WORD comments '=' comments CODE_CLAUSE WHITE_SPACE;
+
+
+edge_type_clause: TYPE_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE;
+
+
 
 internal_edge: INTERNAL_EDGE_BEGIN_TAG comments INTERNAL_EDGE_END_TAG
              ; 

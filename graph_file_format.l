@@ -14,6 +14,8 @@ void my_input(char *buf,size_t read_bytes,size_t max_size,YYLTYPE *yylloc);
 CSYM [^\n]
 NUMBER [0-9]+
 
+
+
 %%
 "<graph>"                      {
                                   yylloc->first_line=yylloc->last_line;
@@ -83,6 +85,48 @@ NUMBER [0-9]+
                                   yylloc->first_column=yylloc->last_column;
                                   yylloc->last_column+=strlen(yytext);
                                    return VERTEX_END_TAG;
+                                              
+                               }
+"<send>"                       {
+                                  yylloc->first_line=yylloc->last_line;
+                                  yylloc->first_column=yylloc->last_column;
+                                  yylloc->last_column+=strlen(yytext);
+                                   return SEND_BEGIN_TAG;
+                                              
+                               }
+"</send>"                      {
+                                  yylloc->first_line=yylloc->last_line;
+                                  yylloc->first_column=yylloc->last_column;
+                                  yylloc->last_column+=strlen(yytext);
+                                   return SEND_END_TAG;
+                                              
+                               }
+"<recv>"                       {
+                                  yylloc->first_line=yylloc->last_line;
+                                  yylloc->first_column=yylloc->last_column;
+                                  yylloc->last_column+=strlen(yytext);
+                                   return RECV_BEGIN_TAG;
+                                              
+                               }
+"</recv>"                      {
+                                  yylloc->first_line=yylloc->last_line;
+                                  yylloc->first_column=yylloc->last_column;
+                                  yylloc->last_column+=strlen(yytext);
+                                   return RECV_END_TAG;
+                                              
+                               }
+"<fragment>"                   {
+                                  yylloc->first_line=yylloc->last_line;
+                                  yylloc->first_column=yylloc->last_column;
+                                  yylloc->last_column+=strlen(yytext);
+                                   return FRAGMENT_BEGIN_TAG;
+                                              
+                               }
+"</fragment>"                  {
+                                  yylloc->first_line=yylloc->last_line;
+                                  yylloc->first_column=yylloc->last_column;
+                                  yylloc->last_column+=strlen(yytext);
+                                   return FRAGMENT_END_TAG;
                                               
                                }
 "<internal_edge>"              {
@@ -183,14 +227,13 @@ NUMBER [0-9]+
                                    return IO_VOLUME_KEY_WORD;
                                             
                                }
-"code_volume"                    {
+"code_volume"                  {
                                   yylloc->first_line=yylloc->last_line;
                                   yylloc->first_column=yylloc->last_column;
                                   yylloc->last_column+=strlen(yytext);
                                    return CODE_VOLUME_KEY_WORD;
                                             
                                }
-
 "main_subgraph"                {
                                   yylloc->first_line=yylloc->last_line;
                                   yylloc->first_column=yylloc->last_column;
@@ -246,6 +289,33 @@ NUMBER [0-9]+
                                   yylloc->last_column+=strlen(yytext);
                                    return FILE_KEY_WORD;
                                                
+                               }
+"variable"                     {
+                                  yylloc->first_line=yylloc->last_line;
+                                  yylloc->first_column=yylloc->last_column;
+                                  yylloc->last_column+=strlen(yytext);
+                                  return VARIABLE_KEY_WORD;
+                               
+                               }
+"type"                         {
+                                  yylloc->first_line=yylloc->last_line;
+                                  yylloc->first_column=yylloc->last_column;
+                                  yylloc->last_column+=strlen(yytext);
+                                  return TYPE_KEY_WORD;
+
+                               }
+"left"                         {
+                                  yylloc->first_line=yylloc->last_line;
+                                  yylloc->first_column=yylloc->last_column;
+                                  yylloc->last_column+=strlen(yytext);
+                                  return LEFT_KEY_WORD;
+                               }
+"right"                        {
+                                  yylloc->first_line=yylloc->last_line;
+                                  yylloc->first_column=yylloc->last_column;
+                                  yylloc->last_column+=strlen(yytext);
+                                  return RIGHT_KEY_WORD;
+
                                }
 (#){CSYM}*(\n)                 {  /* printf("Recognized text is: '%s'\n",yytext);	*/
                                   yylloc->first_column=yylloc->last_column;

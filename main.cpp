@@ -1,6 +1,6 @@
 #include <stdio.h>  
 
-extern int yyparse();
+extern int yyparse(void *param);
 extern int yydebug;
 
 /*
@@ -13,6 +13,8 @@ void yyerror(const char *err_msg)
 
 int main(int argc,char **argv)
 {
+
+    int parameter;
 
 	FILE *f=NULL;
 	FILE *buf;
@@ -34,7 +36,7 @@ int main(int argc,char **argv)
 
 	buf=stdin;
 	stdin=f;
-	flag=yyparse();
+	flag=yyparse(&parameter);
 	fclose(f);
 	stdin=buf;
 

@@ -193,7 +193,7 @@ io_volume_weight_clause: IO_VOLUME_KEY_WORD comments '=' comments CODE_CLAUSE WH
 code_volume_weight_clause: CODE_VOLUME_KEY_WORD comments '=' comments CODE_CLAUSE WHITE_SPACE 
                          ;
 
-exchange_clause: EXCHANGE_BEGIN_TAG exchange_entry comments EXCHANGE_END_TAG
+exchange_clause: EXCHANGE_BEGIN_TAG comments name_clause exchange_entry comments EXCHANGE_END_TAG
                ;
 
 exchange_entry:
@@ -204,13 +204,11 @@ exchange_entry:
 send_clause: SEND_BEGIN_TAG comments edge_entry comments  SEND_END_TAG
            ;
 
-recv_clause: RECV_BEGIN_TAG edge_entry comments  RECV_END_TAG
+recv_clause: RECV_BEGIN_TAG comments edge_entry comments  RECV_END_TAG
            ;
 
-edge_entry: name_clause comments edge_type_clause comments edge_code_clause 
-           ;
 
-edge_code_clause: template_name_clause
+edge_entry:       template_name_clause
                 | edge_variables_fragment edge_variables_fragments
                 ;
 

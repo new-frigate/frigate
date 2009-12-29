@@ -157,6 +157,20 @@ NUMBER [0-9]+
                                    return EXTERNAL_EDGE_END_TAG;
                                        
                                }
+"<control_edge>"               {
+                                  yylloc->first_line=yylloc->last_line;
+                                  yylloc->first_column=yylloc->last_column;
+                                  yylloc->last_column+=strlen(yytext);
+                                   return CONTROL_EDGE_BEGIN_TAG;
+                                     
+                               }
+"</control_edge>"              {
+                                  yylloc->first_line=yylloc->last_line;
+                                  yylloc->first_column=yylloc->last_column;
+                                  yylloc->last_column+=strlen(yytext);
+                                   return CONTROL_EDGE_END_TAG;
+                                       
+                               }
 "<code>"                       {
                                   yylloc->first_line=yylloc->last_line;
                                   yylloc->first_column=yylloc->last_column;
@@ -288,6 +302,20 @@ NUMBER [0-9]+
                                   yylloc->first_column=yylloc->last_column;
                                   yylloc->last_column+=strlen(yytext);
                                    return FILE_KEY_WORD;
+                                               
+                               }
+"send"                         {
+                                  yylloc->first_line=yylloc->last_line;
+                                  yylloc->first_column=yylloc->last_column;
+                                  yylloc->last_column+=strlen(yytext);
+                                   return SEND_KEY_WORD;
+                                               
+                               }
+"recv"                         {
+                                  yylloc->first_line=yylloc->last_line;
+                                  yylloc->first_column=yylloc->last_column;
+                                  yylloc->last_column+=strlen(yytext);
+                                   return RECV_KEY_WORD;
                                                
                                }
 "variable"                     {

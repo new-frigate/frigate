@@ -77,6 +77,14 @@ code_volume= @ abc*bca @
 @
 </code>
 
+<exchange>
+    name="first"
+    send="aa_template"
+    send="bb_template"
+    recv="aa"
+    recv="bb"
+</exchange>
+
 </vertex> 
 
 </subgraph>

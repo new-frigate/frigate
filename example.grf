@@ -85,9 +85,99 @@ code_volume= @ abc*bca @
     recv="bb"
 </exchange>
 
-</vertex> 
+</vertex>
+
+<internal_edge>
+    name="my first internal edge"
+    template="first"
+    send=("bbb","first")
+    recv=("abba","first")
+</internal_edge>
+
+<control_edge>
+    name="my first control edge"
+    template="first"
+    send=("bbb","first")
+</control_edge>
 
 </subgraph>
+
+<edge_template>
+    name="first"
+ <send>   
+    <fragment>
+        variable = @a["offset"]@
+        type     = @ my_mpi_type["offset"] @
+        left     = @ (i-1)*global_size/num_vertices @
+        right    = @ i*global_size/num_vertices     @
+    </fragment>
+
+    <fragment>
+        variable = @a["offset"]@
+        type     = @ my_mpi_type["offset"] @
+        left     = @ (i-1)*global_size/num_vertices @
+        right    = @ i*global_size/num_vertices     @
+    </fragment>
+
+
+ </send>
+
+ <recv>
+    <fragment>
+        variable = @a["offset"]@
+        type     = @ my_mpi_type["offset"] @
+        left     = @ (i-1)*global_size/num_vertices @
+        right    = @ i*global_size/num_vertices     @
+    </fragment>
+ </recv>
+</edge_template>
+
+<external_edge>
+    name="my first external edge"
+    template="first"
+    send=("world","bbb",  "first")
+    recv=("world","bbb" , "first")
+</external_edge>
+
+<vertex_template>
+    name="generic"
+    
+    <code>
+        io_volume = @ a+bbbb @
+        file="hello"
+    </code>
+
+    <code>
+        @
+             if(a==0)
+             {
+               a=10;
+             }
+        @
+    </code>
+
+    <code>
+        io_volume  = @ 0       @
+        code_volume= @ abc*bca @
+        @
+             if(a==0)
+             {
+                a=10;
+             }
+        @
+    </code>
+
+    <exchange>
+        name="first"
+        
+        send="aa_template"
+        send="bb_template"
+        
+        recv="aa"
+        recv="bb"
+    </exchange>
+</vertex_template>
+
 </graph># gfghfghfg
 # hello
 # ehlo

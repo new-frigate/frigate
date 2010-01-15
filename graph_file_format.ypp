@@ -104,6 +104,11 @@ void my_yyerror(struct YYLTYPE *locp,const char *str);
 %token CONTROL_EDGE_BEGIN_TAG;
 %token CONTROL_EDGE_END_TAG;
 
+%token EDGE_TEMPLATE_BEGIN_TAG;
+%token EDGE_TEMPLATE_END_TAG;
+
+%token VERTEX_TEMPLATE_BEGIN_TAG;
+%token VERTEX_TEMPLATE_END_TAG;
 
 %%
 graph:  comments  GRAPH_BEGIN_TAG  comments graph_declarations comments main_subgraph entry_graph comments GRAPH_END_TAG comments
@@ -140,6 +145,8 @@ tail_clause:
 entry_graph: 
 			| entry_graph  comments  subgraph
             | entry_graph  comments  external_edge
+            | entry_graph  comments  edge_template
+            | entry_graph  comments  vertex_template
            ;
 
 version_clause: VERSION_KEY_WORD  comments '=' comments POSITIVE_FLOAT_POINT_VALUE /* {printf("OK\n\n\n\n");}*/  WHITE_SPACE { printf("%s\n",$5); double val; val=strtod($5,NULL); printf("version is %f\n",val); }
@@ -213,22 +220,33 @@ send_clause: SEND_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE
 recv_clause: RECV_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE
            ;
 
-/*
-edge_entry:       template_name_clause
-                | edge_variables_fragment edge_variables_fragments
-                ;
+vertex_template: VERTEX_TEMPLATE_BEGIN_TAG comments name_clause comments vertex_body_clause VERTEX_TEMPLATE_END_TAG
+               ;
 
-edge_variables_fragments:
-                        | comments edge_variables_fragment edge_variables_fragments
+
+edge_template: 
+               EDGE_TEMPLATE_BEGIN_TAG 
+                         comments name_clause 
+                         comments SEND_BEGIN_TAG 
+                                comments edge_variables_fragments
+                         comments SEND_END_TAG
+                         comments RECV_BEGIN_TAG
+                                comments edge_variables_fragments
+                         comments RECV_END_TAG comments 
+               EDGE_TEMPLATE_END_TAG
+             ;
+
+edge_variables_fragments: edge_variables_fragment
+                        | edge_variables_fragments comments edge_variables_fragment
                         ;
 
-edge_variables_fragment: 
-                         FRAGMENT_BEGIN_TAG 
-                            comments 
-                            variable_name_clause 
-                            comments 
-                            variable_type_clause 
-                            comments  
+edge_variables_fragment:
+                         FRAGMENT_BEGIN_TAG
+                            comments
+                            variable_name_clause
+                            comments
+                            variable_type_clause
+                            comments
                             left_fragment_border_clause
                             comments
                             right_fragment_border_clause
@@ -236,16 +254,14 @@ edge_variables_fragment:
                          FRAGMENT_END_TAG;
 
 
-variable_name_clause: VARIABLE_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE;
+variable_name_clause: VARIABLE_KEY_WORD comments '=' comments CODE_CLAUSE WHITE_SPACE;
 
-variable_type_clause: TYPE_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE;
+variable_type_clause: TYPE_KEY_WORD comments '=' comments CODE_CLAUSE WHITE_SPACE;
 
 left_fragment_border_clause:  LEFT_KEY_WORD  comments '=' comments CODE_CLAUSE WHITE_SPACE;
 right_fragment_border_clause: RIGHT_KEY_WORD comments '=' comments CODE_CLAUSE WHITE_SPACE;
 
 
-
-*/
 
 internal_edge: 
               INTERNAL_EDGE_BEGIN_TAG 
@@ -268,9 +284,9 @@ external_edge:
                    comments
                template_name_clause
                    comments
-               internal_edge_send_coords
+               external_edge_send_coords
                    comments
-               internal_edge_recv_coords
+               external_edge_recv_coords
                    comments
               EXTERNAL_EDGE_END_TAG
              ;

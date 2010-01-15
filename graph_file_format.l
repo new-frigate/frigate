@@ -171,6 +171,34 @@ NUMBER [0-9]+
                                    return CONTROL_EDGE_END_TAG;
                                        
                                }
+"<edge_template>"              {
+                                  yylloc->first_line=yylloc->last_line;
+                                  yylloc->first_column=yylloc->last_column;
+                                  yylloc->last_column+=strlen(yytext);
+                                   return EDGE_TEMPLATE_BEGIN_TAG;
+                                     
+                               }
+"</edge_template>"             {
+                                  yylloc->first_line=yylloc->last_line;
+                                  yylloc->first_column=yylloc->last_column;
+                                  yylloc->last_column+=strlen(yytext);
+                                   return EDGE_TEMPLATE_END_TAG;
+                                       
+                               }
+"<vertex_template>"              {
+                                  yylloc->first_line=yylloc->last_line;
+                                  yylloc->first_column=yylloc->last_column;
+                                  yylloc->last_column+=strlen(yytext);
+                                   return VERTEX_TEMPLATE_BEGIN_TAG;
+                                     
+                               }
+"</vertex_template>"             {
+                                  yylloc->first_line=yylloc->last_line;
+                                  yylloc->first_column=yylloc->last_column;
+                                  yylloc->last_column+=strlen(yytext);
+                                   return VERTEX_TEMPLATE_END_TAG;
+                                       
+                               }
 "<code>"                       {
                                   yylloc->first_line=yylloc->last_line;
                                   yylloc->first_column=yylloc->last_column;

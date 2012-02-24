@@ -46,44 +46,44 @@ name # hello
 condition = @ 1 @
 
 <vertex>
-name="abba"
-template = "generic"
+	name="abba"
+	template = "generic"
 </vertex>
 
 <vertex>
-name="bbb"
-
-<code>
-file="hello"
-</code>
-
-<code>
-@
- if(a==0)
- {
-  a=10;
- }
-@
-</code>
-
-<code>
-io_volume  = @ 0       @
-code_volume= @ abc*bca @
-@
- if(a==0)
- {
-  a=10;
- }
-@
-</code>
-
-<exchange>
-    name="first"
-    send="aa_template"
-    send="bb_template"
-    recv="aa"
-    recv="bb"
-</exchange>
+	name="bbb"
+	
+	<code>
+		file="hello"
+	</code>
+	
+	<code>
+	@
+		 if(a==0)
+		 {
+		  a=10;
+		 }
+	@
+	</code>
+	
+	<code>
+		io_volume  = @ 0       @
+		code_volume= @ abc*bca @
+	@
+		 if(a==0)
+		 {
+		  a=10;
+		 }
+	@
+	</code>
+	
+	<exchange>
+	    name="first"
+	    send="aa_template"
+	    send="bb_template"
+	    recv="aa"
+	    recv="bb"
+	</exchange>
 
 </vertex>
 
@@ -118,7 +118,6 @@ code_volume= @ abc*bca @
         left     = @ (i-1)*global_size/num_vertices @
         right    = @ i*global_size/num_vertices     @
     </fragment>
-
 
  </send>
 

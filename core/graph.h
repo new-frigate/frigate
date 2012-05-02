@@ -1,9 +1,11 @@
 #ifndef __FRIGATE_GHAPH_H__
 #define __FRIGATE_GHAPH_H__
 
+#include <iostream>
+#include <fstream>
+
 #include "frigate_types.h"
 #include "char_names.h"
-
 #include "line_dynamic_array.h"
 
 
@@ -12,12 +14,21 @@ namespace frigate
 //////////////////////////////
 // Vertices
 
+	/**
+	 * Abstract class that must be implemented with CodeBlock or ExchangeBlock
+	 */
+	class VerticeBlock
+	{
+	public:
+		virtual void toFile(std::ofstream& out) = 0;
+		virtual ~VerticeBlock(){};
+	};
     /**
      * This class contains links to blocks of code in C/C++ for vertices or "header", 
      * "root" and "tail" in graph.
      * Also it contains info about i/o and calculation costs.
      */
-    class Code_block
+    class CodeBlock : public VerticeBlock
     {
 	protected:
         /**
@@ -34,42 +45,57 @@ namespace frigate
          */ 
         char* file_name;
 
-        int io_volume;
-        int code_volume;
+        char* io_volume;
+        char* code_volume;
+
+	public:
+        CodeBlock():code(NULL), file_name(NULL), io_volume(NULL), code_volume(NULL){};
+        void toFile(std::ofstream& out);
+        ~CodeBlock(){};
     };
 
     /**
      * This class is need for possibility of multiple exchanges in one vertex
      * It contains IDs of opposite vertices
      */
-    class Exchange_block
+    class ExchangeBlock : public VerticeBlock
     {
     protected:
     	frigate_name_id_type name_id;
-    	Line_dynamic_array<frigate_name_type_id> send;
-    	Line_dynamic_array<frigate_name_type_id> recv;
+    	Line_dynamic_array<frigate_name_id_type> send;
+    	Line_dynamic_array<frigate_name_id_type> recv;
+
+	public:
+    	ExchangeBlock(){};
+        void toFile(std::ofstream& out);
+        ~ExchangeBlock(){};
     };
 
     /**
      * Template class contains code blocks and exchange blocks
      * in arbitrary order. Every vertex must have its template
      */
-    class Vertex_template
+    class VertexTemplate
     {
     protected:
-    	frigate_name_id_type template_name_id;
-    	Line_dynamic_array<Code_block> code_blocks;		//Need to think about
-    	Line_dynamic_array<Exchange_block> exchanges;	//alternating them
+    	frigate_name_id_type name_id;
+    	Line_dynamic_array<VerticeBlock*> inside_blocks;
+	public:
+        void toFile(std::ofstream& out);
     };
 
     /**
      * Vertex class is specific vertex.
      * Several vertices may have same template
      */
-    class Vertex: public Vertex_template
+    class Vertex: public VertexTemplate
     {
     protected:
     	frigate_name_id_type name_id;
+    	frigate_name_id_type template_name_id;
+
+    public:
+        void toFile(std::ofstream& out);
     };
 
 
@@ -82,29 +108,35 @@ namespace frigate
     class Fragment
     {
     protected:
-    	char* variable;
-    	char* type;
-    	char* left_border;
-    	char* right_border;
+    	CodeBlock variable;
+    	CodeBlock type;
+    	CodeBlock left_border;
+    	CodeBlock right_border;
+
+    public:
+        void toFile(std::ofstream& out);
     };
 
     /*
      * Template of edge, contains information about sending and
      * receiving variables
      */
-    class Edge_template
+    class EdgeTemplate
     {
     protected:
-    	frigate_name_id_type template_name_id;
+    	frigate_name_id_type name_id;
 
     	Line_dynamic_array<Fragment> send_fragments;
     	Line_dynamic_array<Fragment> recv_fragments;
+
+    public:
+        void toFile(std::ofstream& out);
     };
 
     /*
      * Internal edge for subgraph contains sending and receiving vertices coords
      */
-    class Internal_edge: public Edge_template
+    class InternalEdge: public EdgeTemplate
     {
     	frigate_name_id_type name_id;
     	frigate_name_id_type template_name_id;
@@ -120,23 +152,29 @@ namespace frigate
     	 */
     	frigate_name_id_type recv_vertex_id;
     	frigate_name_id_type recv_vertex_exchange_id;
+
+    public:
+        void toFile(std::ofstream& out);
     };
 
     /*
      * Control edge always connect with control vertex
      */
-    class Control_edge: public Edge_template
+    class ControlEdge: public EdgeTemplate
     {
     	frigate_name_id_type name_id;
     	frigate_name_id_type template_name_id;
     	frigate_name_id_type send_vertex_id;
     	frigate_name_id_type send_vertex_exchange_id;
+
+    public:
+        void toFile(std::ofstream& out);
     };
 
     /*
      * External edge connect vertices in different subgraphs
      */
-    class External_edge: public Edge_template
+    class ExternalEdge: public EdgeTemplate
     {
     protected:
         frigate_name_id_type name_id;
@@ -157,6 +195,9 @@ namespace frigate
         frigate_name_id_type recv_subgraph_id;
         frigate_name_id_type recv_vertex_id;
         frigate_name_id_type recv_exchange_block_id;
+
+    public:
+        void toFile(std::ofstream& out);
     };
 
 ////////////////////////////////
@@ -170,12 +211,14 @@ namespace frigate
     {
     protected:
         frigate_name_id_type name_id;
-        char* condition_code;
+        CodeBlock condition_code;
         int   predefined_condition_value;
         Line_dynamic_array<Vertex> vertices;
-        Line_dynamic_array<Internal_edge> internal_edges;
-        Line_dynamic_array<Control_edge>  control_edges;
+        Line_dynamic_array<InternalEdge> internal_edges;
+        Line_dynamic_array<ControlEdge>  control_edges;
 
+    public:
+        void toFile(std::ofstream& out);
     };
 
     /*
@@ -187,27 +230,33 @@ namespace frigate
      */
     class Graph
     {
+    public:
+    	static CharNames Names;
 	protected:
 		float version;
 
-		Code_block header;
-		Code_block root;
-		Code_block tail;
-
-        Char_names char_names;
+		CodeBlock header;
+		CodeBlock root;
+		CodeBlock tail;
 
         /**
-         * The main subgraph name in the graph.
+         * The main subgraph id in the graph.
          */
-		char* main_subgraph;
+		frigate_name_id_type main_subgraph_id;
+
+		//char* main_subgraph;
 
 		Line_dynamic_array<Subgraph>        subgraphs;
 
-		Line_dynamic_array<External_edge>   external_edges;
+		Line_dynamic_array<ExternalEdge>   external_edges;
 
-		Line_dynamic_array<Vertex_template> vertex_templates;
+		Line_dynamic_array<VertexTemplate> vertex_templates;
 
-		Line_dynamic_array<Edge_template>   edge_templates;
+		Line_dynamic_array<EdgeTemplate>   edge_templates;
+
+	public:
+		void toFile(std::ofstream& out);
+		int toFile(char* filename);
     };
 
 }

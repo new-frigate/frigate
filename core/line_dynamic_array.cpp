@@ -113,7 +113,7 @@ int  Line_dynamic_array<Body_type>::print(void)
 }
 /******************************************************************************/
 template <class Body_type>
-Body_type* Line_dynamic_array<Body_type>::look_position_uncopy(int position)
+Body_type* Line_dynamic_array<Body_type>::get_elem(int position)
 {
 	if((position<0) || (position>=num_records))
 	{

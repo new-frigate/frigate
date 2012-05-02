@@ -12,9 +12,12 @@ lex.yy.c: graph_file_format.l
 	flex  --bison-bridge --bison-locations $(FLEX_DEBUG_FLAG) $^
 
 
-parser: graph_file_format.tab.cpp main.cpp lex.yy.c
+parser: core/graph_touch.cpp \
+		core/char_names.cpp \
+		graph_file_format.tab.cpp \
+		main.cpp lex.yy.c
 	g++ -g $(BISON_DEBUG_FLAG) -o $@ $^
-
+	
 clean:
 	rm -rf graph_file_format.tab.cpp lex.yy.c graph_file_format.tab.hpp parser
 

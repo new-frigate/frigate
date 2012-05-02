@@ -102,7 +102,7 @@ public:
 	  * Search element by index in array. If this position is out 
 	  * of range return NULL.
 	  */
-	 Body_type *look_position_uncopy(int position);
+	 Body_type *get_elem(int position);
 
 	/**
 	  * Search element by index in array. If this position is out 
@@ -122,7 +122,7 @@ public:
 
 	 /**
 	  * This code reduces size of internal arrays to size actual for 
-	  * real number of records that are stored in this dynaic array.
+	  * real number of records that are stored in this dynamic array.
 	  *
 	  * Return:
 	  *  0 if ok

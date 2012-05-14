@@ -1,15 +1,18 @@
 %{
 
 #include <stdio.h>
+#include <string>
+#include "core/graph.h"
+#include "core/frigate_types.h"
 
+using namespace frigate;
+
+#include "graph_file_format.tab.hpp"
 
 #define YYSTYPE char*
 #define YYPARSE_PARAM output_param
 
-#include "graph_file_format.tab.hpp"
-
-
-extern int yylex(YYSTYPE *value,YYLTYPE *location);
+int yylex(YYSTYPE *value,YYLTYPE *location);
 
 /*
  * It seems for me that it will work only 
@@ -17,14 +20,29 @@ extern int yylex(YYSTYPE *value,YYLTYPE *location);
  */
 #define yyerror(str) my_yyerror(&yylloc,(str))
 
+#define GREAT_ERROR exit(1)
+
 void my_yyerror(struct YYLTYPE *locp,const char *str);
 
+Graph* main_grph = NULL;
+Line_dynamic_array<Subgraph> 		SGs;
+Line_dynamic_array<ExternalEdge> 	EEs;
+Line_dynamic_array<EdgeTemplate> 	ETs;
+Line_dynamic_array<VertexTemplate> 	VTs;
+Line_dynamic_array<Vertex> 		 Vs;
+Line_dynamic_array<VerticeBlock> 	VBs;
+Line_dynamic_array<ControlEdge> 	CEs;
+Line_dynamic_array<InternalEdge> 	IEs;
+Line_dynamic_array<Fragment>		 Fs;
+ 
 %}
 
 /*
 %union
 {
-	char *str;
+	char 	 *str;
+	Graph	 *grph;
+	Subgraph *subgrph;
 }
 */
 
@@ -72,8 +90,8 @@ void my_yyerror(struct YYLTYPE *locp,const char *str);
 %token BLOCK_END_TAG;
 %token FILE_KEY_WORD;
 
-%token  IO_VOLUME_KEY_WORD;
-%token  CODE_VOLUME_KEY_WORD;
+%token IO_VOLUME_KEY_WORD;
+%token CODE_VOLUME_KEY_WORD;
 
 %token EXCHANGE_BEGIN_TAG;
 %token EXCHANGE_END_TAG;
@@ -111,248 +129,483 @@ void my_yyerror(struct YYLTYPE *locp,const char *str);
 %token VERTEX_TEMPLATE_END_TAG;
 
 %%
-graph:  comments  GRAPH_BEGIN_TAG  comments graph_declarations comments main_subgraph entry_graph comments GRAPH_END_TAG comments
-     ;
+graph: 	comments  GRAPH_BEGIN_TAG
+	{		
+		main_grph = new Graph();
+	}  
+	comments graph_declarations comments main_subgraph graph_entry comments GRAPH_END_TAG comments
+	{
+		main_grph->setEntries(SGs, EEs, ETs, VTs);
+		SGs.erase();
+		EEs.erase();
+		ETs.erase();
+		VTs.erase();
+	}
+     	;
 
 comments:
-			| comments COMMENT_STRING
-			| comments WHITE_SPACE
+		| comments COMMENT_STRING
+		| comments WHITE_SPACE
         ;
 
 graph_declarations: version_clause comments header_clause comments root_clause comments tail_clause 
-                  ;
+        ;
 
 header_clause:
+	
                | HEADER_BEGIN_TAG comments HEADER_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE comments HEADER_END_TAG
-                   {printf("File with code for header located in: \"%s\"\n",$7);  } 
-               | HEADER_BEGIN_TAG comments CODE_CLAUSE comments HEADER_END_TAG { printf("Code for header: \"%s\"\n",$3); }
-             ;
+	{
+		CodeBlock block;
+		block.setFileName($7);
+		main_grph->setHeader(block);		
+	} 
+               | HEADER_BEGIN_TAG comments CODE_CLAUSE comments HEADER_END_TAG
+	{
+		CodeBlock block;
+		block.setCode($3);
+		main_grph->setHeader(block);
+	}
+        ;
 
 root_clause:   
                | ROOT_BEGIN_TAG comments ROOT_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE comments ROOT_END_TAG 
-                  {printf("File with code for root located in: \"%s\"\n",$7);  } 
-               | ROOT_BEGIN_TAG comments CODE_CLAUSE comments ROOT_END_TAG { printf("Code for root: \"%s\"\n",$3); }
-             ;
+	{
+		CodeBlock block;
+		block.setFileName($7);
+		main_grph->setRoot(block);	
+	} 
+               | ROOT_BEGIN_TAG comments CODE_CLAUSE comments ROOT_END_TAG
+	{
+		CodeBlock block;
+		block.setCode($3);
+		main_grph->setRoot(block);
+	}
+        ;
 
 tail_clause:    
                | TAIL_BEGIN_TAG comments TAIL_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE comments TAIL_END_TAG
-                  {printf("File with code for tail located in: \"%s\"\n",$7);  } 
-               | TAIL_BEGIN_TAG comments CODE_CLAUSE comments TAIL_END_TAG { printf("Code for tail: \"%s\"\n",$3); }
-             ;
+	{
+		CodeBlock block;
+		block.setFileName($7);
+		main_grph->setTail(block);
+		delete block;		
+	} 
+               | TAIL_BEGIN_TAG comments CODE_CLAUSE comments TAIL_END_TAG
+	{
+		CodeBlock block;
+		block.setCode($3);
+		main_grph->setTail(block);
+		delete block;
+	}
+        ;
 
+graph_entry: 
+	| graph_entry  comments  subgraph
+        | graph_entry  comments  external_edge
+        | graph_entry  comments  edge_template
+        | graph_entry  comments  vertex_template
+        ;
 
-
-entry_graph: 
-			| entry_graph  comments  subgraph
-            | entry_graph  comments  external_edge
-            | entry_graph  comments  edge_template
-            | entry_graph  comments  vertex_template
-           ;
-
-version_clause: VERSION_KEY_WORD  comments '=' comments POSITIVE_FLOAT_POINT_VALUE /* {printf("OK\n\n\n\n");}*/  WHITE_SPACE { printf("%s\n",$5); double val; val=strtod($5,NULL); printf("version is %f\n",val); }
-              ;
+version_clause: VERSION_KEY_WORD  comments '=' comments POSITIVE_FLOAT_POINT_VALUE WHITE_SPACE 
+	{
+		double val; 
+		val=strtod($5,NULL); 
+		main_grph->setVersion(val);
+	}
+        ;
 
 main_subgraph:  /* If Empty then the first subgraph in graph file will be choisen as main */
-               | MAIN_SUBGRAPH_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE { printf("main subgraph is '%s'\n",$5); }
-             ; 
+        | MAIN_SUBGRAPH_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE
+	{
+		main_grph->setMainSubgraph($5);
+	}
+             	; 
 
-subgraph: SUBGRAPH_BEGIN_TAG comments name_clause comments condition_clause comments subgraph_entry comments SUBGRAPH_END_TAG
+subgraph: 
+	SUBGRAPH_BEGIN_TAG 
+	{
+		Subgraph* subgraph = new Subgraph();
+		SGs.add_element(subgraph);
+		delete subgraph;
+	}
+	comments name_clause comments condition_clause comments subgraph_entry comments SUBGRAPH_END_TAG
+	{
+		Subgraph* subgraph = SGs.look_position(SGs.num_elements()-1);
+		subgraph->setName($3);
+		CodeBlock cond;
+		cond.setCode($5);
+		subgraph->setCondition(cond);
+		subgraph->setEntries(Vs, IEs, CEs);
+		Vs.erase();
+		IEs.erase();
+		CEs.erase();
+	}
         ;
 
 name_clause: NAME_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE
-           ;
+	{
+		$$ = $5;
+	}
+        ;
 
 condition_clause: CONDITION_KEY_WORD comments '=' comments CODE_CLAUSE WHITE_SPACE
-                ;
+	{
+		$$ = $5;
+	}
+        ;
 
 subgraph_entry:
-                | subgraph_entry comments vertex  
-                | subgraph_entry comments internal_edge 
-                | subgraph_entry comments control_edge
-              ;
+        | subgraph_entry comments vertex
+        | subgraph_entry comments internal_edge	 
+        | subgraph_entry comments control_edge
+        ;
 
-vertex: VERTEX_BEGIN_TAG comments name_clause comments vertex_entry VERTEX_END_TAG 
-      ;
+vertex: VERTEX_BEGIN_TAG 
+	{
+		Vertex* vertex = new Vertex();
+		Vs.add_element(vertex);
+		delete vertex;
+	}
+	comments name_clause comments vertex_entry VERTEX_END_TAG 
+	{
+		Vertex* vertex = Vs.look_position(Vs.num_elements()-1);
+		vertex->setName($4);
+	}
+      	;
 
-vertex_entry:   template_name_clause comments
-              | vertex_body_clause
+vertex_entry:  	
+	template_name_clause comments
+	{
+		Vertex* vertex = Vs.look_position(Vs.num_elements()-1);
+		vertex->setTemplateName($1);
+	} 
+        | vertex_body_clause
+	{
+		Vertex* vertex = Vs.look_position(Vs.num_elements()-1);
+		vertex->setVerticeBlocks(VBs);
+		VBs.erase();
+	}
             ; 
 
 template_name_clause: TEMPLATE_NAME_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE
-                           ;
+	{
+		$$ = $5;
+	}
+	;
 
-vertex_body_clause:   code_volume_clause comments
-                    | exchange_clause    comments
-                    | code_volume_clause comments vertex_body_clause
-                    | exchange_clause    comments vertex_body_clause
-                  ;
+vertex_body_clause:	
+	  code_volume_clause comments
+        | exchange_clause    comments
+	| code_volume_clause comments vertex_body_clause
+        | exchange_clause    comments vertex_body_clause
+        ;
 
+code_volume_clause: 
+	CODE_BEGIN_TAG 
+	{
+		VerticeBlock* code_block = new CodeBlock();
+		VBs.add_element(code_block);
+		delete code_block;
+	}
+	comments code_declarations code_block_clause comments CODE_END_TAG
+	;
 
-code_volume_clause: CODE_BEGIN_TAG  comments code_declarations code_block_clause comments CODE_END_TAG
-                  ;
 code_declarations: 
-                 | code_volume_weight_clause  comments code_declarations
-                 | io_volume_weight_clause    comments  code_declarations
-                 ;
+        | code_volume_weight_clause
+        | io_volume_weight_clause
+	| code_volume_weight_clause io_volume_weight_clause
+	| io_volume_weight_clause code_volume_weight_clause
+        ;
 
-code_block_clause: CODE_CLAUSE WHITE_SPACE
-                 | FILE_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE
-                 ;
+code_block_clause: 
+  	  CODE_CLAUSE WHITE_SPACE
+	{
+		CodeBlock* code_block = dynamic_cast<CodeBlock*> (VBs.look_position(Vs.num_elements()-1));
+		code_block->setCode($1);
+	}
+        | FILE_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE
+	{
+		CodeBlock* code_block = dynamic_cast<CodeBlock*> (VBs.look_position(Vs.num_elements()-1));
+		code_block->setFileName($5);
+	}
+        ;
 
-io_volume_weight_clause: IO_VOLUME_KEY_WORD comments '=' comments CODE_CLAUSE WHITE_SPACE
-                       ;
+io_volume_weight_clause: 
+	IO_VOLUME_KEY_WORD comments '=' comments CODE_CLAUSE WHITE_SPACE
+	{
+		CodeBlock* code_block = dynamic_cast<CodeBlock*> (VBs.look_position(Vs.num_elements()-1));
+		code_block->setIOVolume($5);
+	}
+        ;
 
-code_volume_weight_clause: CODE_VOLUME_KEY_WORD comments '=' comments CODE_CLAUSE WHITE_SPACE 
-                         ;
+code_volume_weight_clause: 
+	CODE_VOLUME_KEY_WORD comments '=' comments CODE_CLAUSE WHITE_SPACE 
+	{
+		CodeBlock* code_block = dynamic_cast<CodeBlock*> (VBs.look_position(Vs.num_elements()-1));
+		code_block->setCodeVolume($5);
+	}
+        ;
 
-exchange_clause: EXCHANGE_BEGIN_TAG comments name_clause exchange_entry comments EXCHANGE_END_TAG
-               ;
+exchange_clause: 
+	EXCHANGE_BEGIN_TAG 
+	{
+		VerticeBlock* exchange_block = new ExchangeBlock();
+		VBs.add_element(exchange_block);
+		delete exchange_block;
+	}
+	comments name_clause exchange_entry comments EXCHANGE_END_TAG
+        ;
 
 exchange_entry:
-              | comments send_clause exchange_entry
-              | comments recv_clause exchange_entry
-              ;
+        | exchange_entry comments send_clause
+        | exchange_entry comments recv_clause
+        ;
 
-send_clause: SEND_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE
-           ;
+send_clause: 
+	SEND_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE
+	{
+		ExchangeBlock* exchange_block = dynamic_cast<ExchangeBlock*> (VBs.look_position(Vs.num_elements()-1));
+		exchange_block->addSend($5);
+	}
+        ;
 
 
-recv_clause: RECV_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE
-           ;
+recv_clause: 
+	RECV_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE
+	{
+		ExchangeBlock* exchange_block = dynamic_cast<ExchangeBlock*> (VBs.look_position(Vs.num_elements()-1));
+		exchange_block->addRecv($5);
+	}
+        ;
 
-vertex_template: VERTEX_TEMPLATE_BEGIN_TAG comments name_clause comments vertex_body_clause VERTEX_TEMPLATE_END_TAG
-               ;
+vertex_template: 
+	VERTEX_TEMPLATE_BEGIN_TAG
+	{
+		VertexTemplate* vertex_template = new VertexTemplate();
+		VTs.add_element(vertex_template);
+		delete vertex_template;
+	}
+	comments name_clause comments vertex_body_clause VERTEX_TEMPLATE_END_TAG
+	{
+		VertexTemplate* vertex_template = VTs.look_position(VTs.num_elements()-1);
+		vertex_template->setName($4);
+		vertex_template->setVerticeBlocks(VBs);
+		VBs.erase();
+	}
+        ;
 
 
 edge_template: 
-               EDGE_TEMPLATE_BEGIN_TAG 
-                         comments name_clause 
-                         comments SEND_BEGIN_TAG 
-                                comments edge_variables_fragments
-                         comments SEND_END_TAG
-                         comments RECV_BEGIN_TAG
-                                comments edge_variables_fragments
-                         comments RECV_END_TAG comments 
-               EDGE_TEMPLATE_END_TAG
-             ;
+	EDGE_TEMPLATE_BEGIN_TAG
+	{
+		EdgeTemplate* edge_template = new EdgeTemplate();
+		ETs.add_element(edge_template);
+		delete edge_template;
+	}
+        comments name_clause 
+        comments SEND_BEGIN_TAG 
+        comments edge_variables_fragments
+        comments SEND_END_TAG
+	{
+		EdgeTemplate* edge_template = ETs.look_position(ETs.num_elements()-1);
+		edge_template.setSendFragments(Fs);
+		Fs.erase();
+	}
+        comments RECV_BEGIN_TAG
+        comments edge_variables_fragments
+        comments RECV_END_TAG comments 
+	{
+		EdgeTemplate* edge_template = ETs.look_position(ETs.num_elements()-1);
+		edge_template.setRecvFragments(Fs);
+		Fs.erase();
+		edge_template.setName($3);
+	}
+        EDGE_TEMPLATE_END_TAG
+        ;
 
-edge_variables_fragments: edge_variables_fragment
-                        | edge_variables_fragments comments edge_variables_fragment
-                        ;
+edge_variables_fragments: 
+	edge_variables_fragment
+        | edge_variables_fragments comments edge_variables_fragment
+        ;
 
 edge_variables_fragment:
-                         FRAGMENT_BEGIN_TAG
-                            comments
-                            variable_name_clause
-                            comments
-                            variable_type_clause
-                            comments
-                            left_fragment_border_clause
-                            comments
-                            right_fragment_border_clause
-                            comments
-                         FRAGMENT_END_TAG;
+	FRAGMENT_BEGIN_TAG
+		comments
+                variable_name_clause
+                comments
+                variable_type_clause
+	        comments
+                left_fragment_border_clause
+                comments
+                right_fragment_border_clause
+                comments
+        FRAGMENT_END_TAG
+	{
+		Fragment* fragment = new Fragment($3, $5, $7, $9);
+		Fs.addElement(fragment);
+		delete fragment;
+	}
+	;
 
 
-variable_name_clause: VARIABLE_KEY_WORD comments '=' comments CODE_CLAUSE WHITE_SPACE;
+variable_name_clause: 
+	VARIABLE_KEY_WORD comments '=' comments CODE_CLAUSE WHITE_SPACE
+	{
+		$$ = $5;
+	}
+	;
 
-variable_type_clause: TYPE_KEY_WORD comments '=' comments CODE_CLAUSE WHITE_SPACE;
+variable_type_clause: 
+	TYPE_KEY_WORD comments '=' comments CODE_CLAUSE WHITE_SPACE
+	{
+		$$ = $5;
+	}
+	;
 
-left_fragment_border_clause:  LEFT_KEY_WORD  comments '=' comments CODE_CLAUSE WHITE_SPACE;
-right_fragment_border_clause: RIGHT_KEY_WORD comments '=' comments CODE_CLAUSE WHITE_SPACE;
+left_fragment_border_clause:  
+	LEFT_KEY_WORD  comments '=' comments CODE_CLAUSE WHITE_SPACE
+	{
+		$$ = $5;
+	}
+	;
 
-
+right_fragment_border_clause: 
+	RIGHT_KEY_WORD comments '=' comments CODE_CLAUSE WHITE_SPACE
+	{
+		$$ = $5;
+	}
+	;
 
 internal_edge: 
-              INTERNAL_EDGE_BEGIN_TAG 
-                   comments 
-               name_clause 
-                   comments
-               template_name_clause
-                   comments
-               internal_edge_send_coords
-                   comments
-               internal_edge_recv_coords
-                   comments
-              INTERNAL_EDGE_END_TAG
-             ;
+        INTERNAL_EDGE_BEGIN_TAG 
+        comments name_clause 
+        comments template_name_clause
+	{
+		InternalEdge* int_edge = new InternalEdge();
+		int_edge->setName($3);
+		int_edge->setTemplateName($5);
+		IEs.add_element(int_edge);
+		delete int_adge;
+	}
+        comments internal_edge_send_coords
+        comments internal_edge_recv_coords
+        comments 
+        INTERNAL_EDGE_END_TAG
+        ;
 
 external_edge: 
-              EXTERNAL_EDGE_BEGIN_TAG 
-                   comments 
-               name_clause 
-                   comments
-               template_name_clause
-                   comments
-               external_edge_send_coords
-                   comments
-               external_edge_recv_coords
-                   comments
-              EXTERNAL_EDGE_END_TAG
-             ;
+        EXTERNAL_EDGE_BEGIN_TAG
+        comments name_clause 
+        comments template_name_clause
+	{
+		ExternalEdge* extern_edge = new ExternalEdge();
+		extern_edge->setName($3);
+		extern_edge->setTemplateName($5);
+		EEs.add_element(extern_edge);
+		delete extern_edge;
+	}
+        comments external_edge_send_coords
+        comments external_edge_recv_coords
+        comments
+        EXTERNAL_EDGE_END_TAG
+        ;
 
 control_edge:
-              CONTROL_EDGE_BEGIN_TAG
-                   comments
-               name_clause
-                   comments
-               template_name_clause
-                   comments
-               control_edge_send_coords
-                   comments
-              CONTROL_EDGE_END_TAG
-            ;
+        CONTROL_EDGE_BEGIN_TAG
+        comments name_clause
+        comments template_name_clause
+	{
+		ControlEdge* ctrl_edge = new ControlEdge();
+		ctrl_edge->setName($3);
+		ctrl_edge->setTemplateName($5);
+		CEs.add_element(ctrl_edge);
+		delete ctrl_edge;
+	}
+        comments control_edge_send_coords
+        comments
+        CONTROL_EDGE_END_TAG
+        ;
 
 
 internal_edge_send_coords: 
-                            SEND_KEY_WORD 
-                             comments '=' 
-                             comments '('
-                             comments STRING_VALUE  /* Vertex  name */
-                             comments ',' 
-                             comments STRING_VALUE /* Exchange region name */
-                             comments ')' 
-                            WHITE_SPACE
-                         ;
+	SEND_KEY_WORD 
+        comments '=' 
+        comments '('
+        comments STRING_VALUE  /* Vertex  name */
+        comments ',' 
+        comments STRING_VALUE /* Exchange region name */
+        comments ')'
+	{
+		InternalEdge* int_edge = IEs.look_position(IEs.num_elements()-1);
+		int_edge->setSendCoords($7, $11);
+	} 
+        WHITE_SPACE
+	;
 
 internal_edge_recv_coords: 
-                            RECV_KEY_WORD 
-                             comments '=' 
-                             comments '('
-                             comments STRING_VALUE  /* Vertex  name */
-                             comments ',' 
-                             comments STRING_VALUE /* Exchange region name */
-                             comments ')' 
-                            WHITE_SPACE
-                         ;
+        RECV_KEY_WORD 
+        comments '=' 
+        comments '('
+        comments STRING_VALUE  /* Vertex  name */
+        comments ',' 
+        comments STRING_VALUE /* Exchange region name */
+        comments ')' 
+	{
+		InternalEdge* int_edge = IEs.look_position(IEs.num_elements()-1);
+		int_edge->setRecvCoords($7, $11);
+	} 
+        WHITE_SPACE
+        ;
 
 external_edge_send_coords: 
-                            SEND_KEY_WORD 
-                             comments '=' 
-                             comments '('
-                             comments STRING_VALUE  /* Subgraph  name */
-                             comments ',' 
-                             comments STRING_VALUE  /* Vertex  name */
-                             comments ',' 
-                             comments STRING_VALUE /* Exchange region name */
-                             comments ')' 
-                            WHITE_SPACE
-                         ;
+        SEND_KEY_WORD 
+        comments '=' 
+        comments '('
+        comments STRING_VALUE  /* Subgraph  name */
+        comments ',' 
+        comments STRING_VALUE  /* Vertex  name */
+        comments ',' 
+        comments STRING_VALUE /* Exchange region name */
+        comments ')' 
+	{
+		ExternalEdge* extern_edge = EEs.look_position(EEs.num_elements()-1);
+		extern_edge->setSendCoords($7, $11, $15);
+	} 
+        WHITE_SPACE
+        ;
 
 external_edge_recv_coords: 
-                            RECV_KEY_WORD 
-                             comments '=' 
-                             comments '('
-                             comments STRING_VALUE  /* Subgraph  name */
-                             comments ',' 
-                             comments STRING_VALUE  /* Vertex  name */
-                             comments ',' 
-                             comments STRING_VALUE /* Exchange region name */
-                             comments ')' 
-                            WHITE_SPACE
-                         ;
+        RECV_KEY_WORD 
+        comments '=' 
+        comments '('
+        comments STRING_VALUE  /* Subgraph  name */
+        comments ',' 
+        comments STRING_VALUE  /* Vertex  name */
+        comments ',' 
+        comments STRING_VALUE /* Exchange region name */
+        comments ')' 
+	{
+		ExternalEdge* extern_edge = EEs.look_position(EEs.num_elements()-1);
+		extern_edge->setSendCoords($7, $11, $15);
+	} 
+        WHITE_SPACE
+        ;
 
-control_edge_send_coords: internal_edge_send_coords;
+control_edge_send_coords:
+	SEND_KEY_WORD 
+        comments '=' 
+        comments '('
+        comments STRING_VALUE  /* Vertex  name */
+        comments ',' 
+        comments STRING_VALUE /* Exchange region name */
+        comments ')'
+	{
+		ControlEdge* ctrl_edge = CEs.look_position(CEs.num_elements()-1);
+		ctrl_edge->setSendCoords($7, $11);
+	} 
+        WHITE_SPACE
+	;
+
 
 %%
 

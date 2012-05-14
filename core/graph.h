@@ -1,5 +1,5 @@
-#ifndef __FRIGATE_GHAPH_H__
-#define __FRIGATE_GHAPH_H__
+#ifndef __FRIGATE_GRAPH_H__
+#define __FRIGATE_GRAPH_H__
 
 #include <iostream>
 #include <fstream>
@@ -7,7 +7,6 @@
 #include "frigate_types.h"
 #include "char_names.h"
 #include "line_dynamic_array.h"
-
 
 namespace frigate
 {
@@ -22,6 +21,7 @@ namespace frigate
 	public:
 		virtual void toFile(std::ofstream& out) = 0;
 		virtual ~VerticeBlock(){};
+		virtual VerticeBlock* copy() = 0;
 	};
     /**
      * This class contains links to blocks of code in C/C++ for vertices or "header", 
@@ -49,9 +49,13 @@ namespace frigate
         char* code_volume;
 
 	public:
+        CodeBlock(const CodeBlock&);
         CodeBlock():code(NULL), file_name(NULL), io_volume(NULL), code_volume(NULL){};
+        int setCode(char* _code);
+        int setFileName(char* filename);
         void toFile(std::ofstream& out);
-        ~CodeBlock(){};
+        CodeBlock* copy();
+        ~CodeBlock();
     };
 
     /**
@@ -68,6 +72,7 @@ namespace frigate
 	public:
     	ExchangeBlock(){};
         void toFile(std::ofstream& out);
+        ExchangeBlock* copy();
         ~ExchangeBlock(){};
     };
 
@@ -79,8 +84,10 @@ namespace frigate
     {
     protected:
     	frigate_name_id_type name_id;
-    	Line_dynamic_array<VerticeBlock*> inside_blocks;
+    	Line_dynamic_array<VerticeBlock> inside_blocks;
 	public:
+    	VertexTemplate():name_id(-1) {}
+    	VertexTemplate* copy();
         void toFile(std::ofstream& out);
     };
 
@@ -95,7 +102,9 @@ namespace frigate
     	frigate_name_id_type template_name_id;
 
     public:
+    	Vertex():name_id(-1), template_name_id(-1){}
         void toFile(std::ofstream& out);
+        Vertex* copy();
     };
 
 
@@ -115,6 +124,7 @@ namespace frigate
 
     public:
         void toFile(std::ofstream& out);
+        Fragment* copy();
     };
 
     /*
@@ -130,6 +140,8 @@ namespace frigate
     	Line_dynamic_array<Fragment> recv_fragments;
 
     public:
+    	EdgeTemplate():name_id(-1) {}
+    	EdgeTemplate* copy();
         void toFile(std::ofstream& out);
     };
 
@@ -154,7 +166,11 @@ namespace frigate
     	frigate_name_id_type recv_vertex_exchange_id;
 
     public:
+    	InternalEdge():name_id(-1), template_name_id(-1),
+    	send_vertex_id(-1), send_vertex_exchange_id(-1),
+    	recv_vertex_id(-1), recv_vertex_exchange_id(-1) {}
         void toFile(std::ofstream& out);
+        InternalEdge* copy();
     };
 
     /*
@@ -168,7 +184,11 @@ namespace frigate
     	frigate_name_id_type send_vertex_exchange_id;
 
     public:
+    	ControlEdge():name_id(-1), template_name_id(-1),
+    	send_vertex_id(-1), send_vertex_exchange_id(-1) {}
+    	ControlEdge* copy();
         void toFile(std::ofstream& out);
+
     };
 
     /*
@@ -197,7 +217,10 @@ namespace frigate
         frigate_name_id_type recv_exchange_block_id;
 
     public:
+        ExternalEdge();
         void toFile(std::ofstream& out);
+        ExternalEdge* copy();
+
     };
 
 ////////////////////////////////
@@ -218,7 +241,11 @@ namespace frigate
         Line_dynamic_array<ControlEdge>  control_edges;
 
     public:
+        Subgraph();
         void toFile(std::ofstream& out);
+        int setName(char*);
+        void setCondition(CodeBlock& _cond){condition_code = _cond;}
+        Subgraph* copy();
     };
 
     /*
@@ -255,6 +282,11 @@ namespace frigate
 		Line_dynamic_array<EdgeTemplate>   edge_templates;
 
 	public:
+		void setHeader(CodeBlock& _header){header = _header;}
+		void setRoot(CodeBlock& _root){root = _root;}
+		void setTail(CodeBlock& _tail){tail = _tail;}
+		void setVersion(float _version){version = _version;}
+		int setMainSubgraph(char* main_subgraph_name);
 		void toFile(std::ofstream& out);
 		int toFile(char* filename);
     };

@@ -1,12 +1,10 @@
 //Functions which print classes structure in text file in Frigate format
 
-#include "graph.h"
 #include <typeinfo>
+#include "graph.h"
 
 namespace frigate
 {
-
-CharNames Graph::Names;
 
 int Graph::toFile(char* filename)
 {
@@ -152,7 +150,7 @@ void VertexTemplate::toFile(std::ofstream& out)
 
 	for(int i = 0; i<inside_blocks.num_elements(); ++i)
 	{
-		VerticeBlock** pVertBlock= inside_blocks.get_elem(i);
+		VerticeBlock** pVertBlock= (VerticeBlock**)inside_blocks.get_elem(i);
 		if (typeid(*pVertBlock) == typeid(CodeBlock))
 		{
 			out << "<code>" << std::endl;
@@ -176,10 +174,10 @@ void ExchangeBlock::toFile(std::ofstream& out)
 	out << "name = " << Graph::Names.get_name(name_id) << std::endl;
 
 	for(int i = 0; i<send.num_elements(); ++i)
-		out << "send = " << Graph::Names.get_name(*send.get_elem(i)) << std::endl;
+		out << "send = " << Graph::Names.get_name(send.get_elem(i)) << std::endl;
 
 	for(int i = 0; i<recv.num_elements(); ++i)
-		out << "recv = " << Graph::Names.get_name(*recv.get_elem(i)) << std::endl;
+		out << "recv = " << Graph::Names.get_name(recv.get_elem(i)) << std::endl;
 
 	out << "</exchange>" << std::endl;
 	return;

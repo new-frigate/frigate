@@ -1,4 +1,5 @@
-#include <stdio.h>  
+#include <stdio.h>
+#include "core/graph.h"
 
 extern int yyparse(void *param);
 extern int yydebug;

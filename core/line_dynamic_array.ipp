@@ -1,13 +1,9 @@
-
 #ifndef __LINE_DYNAMIC_ARRAY_H__
  #error You must include 'line_dynamic_array.h' file before use this file
 #else
 
 #ifndef __LINE_DYNAMIC_ARRAY_CPP__
 #define __LINE_DYNAMIC_ARRAY_CPP__
-
-#include <stdlib.h>
-#include <stdio.h>
 
 /******************************************************************************/
 template <class Body_type>
@@ -39,6 +35,32 @@ Line_dynamic_array<Body_type>::~Line_dynamic_array()
 	num_records=0;
 	current_internal_array_size=0;
 	return;
+}
+/******************************************************************************/
+template <class Body_type>
+Line_dynamic_array<Body_type>::Line_dynamic_array(const Line_dynamic_array<Body_type>& arr)
+{
+	if (data!=NULL)
+	{
+		for(int i=0;i<num_records;i++)
+			{
+				if(data[i]!=NULL)
+				{
+					delete data[i];
+					data[i]=NULL;
+				}
+			}
+			free(data);
+			data=NULL;
+	}
+
+	num_records = arr.num_records;
+	current_internal_array_size = arr.current_internal_array_size;
+	data = (Body_type **)malloc(arr.current_internal_array_size*sizeof(Body_type *));
+	for(int i = 0; i<num_records; ++i)
+	{
+		data[i]=arr.data[i]->copy();
+	}
 }
 /******************************************************************************/
 template <class Body_type>
@@ -113,7 +135,7 @@ int  Line_dynamic_array<Body_type>::print(void)
 }
 /******************************************************************************/
 template <class Body_type>
-Body_type* Line_dynamic_array<Body_type>::get_elem(int position)
+Body_type* Line_dynamic_array<Body_type>::look_position(int position)
 {
 	if((position<0) || (position>=num_records))
 	{
@@ -124,7 +146,7 @@ Body_type* Line_dynamic_array<Body_type>::get_elem(int position)
 }
 /******************************************************************************/
 template <class Body_type>
-Body_type* Line_dynamic_array<Body_type>::look_position(int position)
+Body_type* Line_dynamic_array<Body_type>::get_elem(int position)
 {
 	if((position<0) || (position>=num_records))
 	{
@@ -183,8 +205,8 @@ int Line_dynamic_array<Body_type>::find_element(Body_type *pattern)
 	}
 	return 0;
 }
-/******************************************************************************/
+
+
 #endif /*  __LINE_DYNAMIC_ARRAY_CPP__ */
 
 #endif /*  __LINE_DYNAMIC_ARRAY_H__   */
-

@@ -1,6 +1,8 @@
 #ifndef __LINE_DYNAMIC_ARRAY_H__
 #define __LINE_DYNAMIC_ARRAY_H__
 
+#include <cstdio>
+#include <cstdlib>
 
 #ifndef INTERNAL_ARRAY_ALONGATION_SIZE
 	#define INTERNAL_ARRAY_ALONGATION_SIZE 2048
@@ -22,6 +24,8 @@
  * implements methods:
  * "int print()", "Body_type* copy()", "int equals(Body_type *element)"
  */
+
+
 template <class Body_type>
 class Line_dynamic_array
 {
@@ -50,6 +54,7 @@ public:
  	 
 	 Line_dynamic_array();
 	 ~Line_dynamic_array();
+	 Line_dynamic_array(const Line_dynamic_array<Body_type>&);
 	 
 	 /**
 	  * Add new element to set.
@@ -129,11 +134,53 @@ public:
 	  * -1 if error.
 	  */
 	 int vacuum(void);
+
+	 /**
+	  * This function erase array, destroy one by one all elements
+	  *
+	  * Return:
+	  *  0 if ok
+	  *  -1 else.
+	  */
+	 void erase(void);
 };
 
-#include "line_dynamic_array.cpp"
+template <>
+class Line_dynamic_array<int>
+{
+private:
+	int* data;
+	int num_records;
+	int current_internal_array_size;
+
+public:
+	 Line_dynamic_array():data(NULL), num_records(0), current_internal_array_size(0){};
+	 ~Line_dynamic_array();
+	 Line_dynamic_array(const Line_dynamic_array<int>&);
+	 INLINE int num_elements(void)
+	 {
+		return num_records;
+	 };
+
+	 INLINE int *get_elements_array(void)
+	 {
+	 	return data;
+	 };
+
+	 int add_element(int element);
+	 int find_element(int element);
+	 int delete_element(int position);
+	 int print(void);
+	 int get_elem(int position);
+	 int* look_position(int position);
+	 int vacuum(void);
+	 void erase(void);
+};
+
+#ifndef __LINE_DYNAMIC_ARRAY_INT_CPP__
+#include "line_dynamic_array.ipp"
+#endif //__LINE_DYNAMIC_ARRAY_INT_CPP__
 
 #undef INTERNAL_ARRAY_ALONGATION_SIZE
 
 #endif /* end __LINE_DYNAMIC_ARRAY_H__ */
-

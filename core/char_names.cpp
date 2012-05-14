@@ -1,15 +1,16 @@
 #include "char_names.h"
 
-namespace frigate
-{
-
 	CharNames::CharNames()
 	{
 		id_count = 0;
 	}
 
-	frigate_name_id_type CharNames::register_name(std:: string name)
+	frigate_name_id_type CharNames::register_name(std::string name)
 	{
+		if(search_name(name) != -1)
+		{
+			return -1;
+		}
 		IdDB.insert( std::pair<int, std::string >(id_count, name));
 		id_count++;
 		return (frigate_name_id_type)id_count;
@@ -38,5 +39,3 @@ namespace frigate
 		}
 		return NULL;
 	}
-
-}

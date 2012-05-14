@@ -4,10 +4,9 @@
 #include <map>
 #include <string>
 #include "frigate_types.h"
-#include "line_dynamic_array.h"
 
-namespace frigate
-{
+//namespace frigate
+//{
     class CharNames
     {
         public:
@@ -20,6 +19,6 @@ namespace frigate
             std::map<frigate_name_id_type, std::string> IdDB;
             int id_count;
     };
-}
+//}
 
 #endif /* __FRIGATE_CHAR_NAMES_H__ */

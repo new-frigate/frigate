@@ -11,8 +11,23 @@
     {
         public:
     		CharNames();
+    		/**
+    		 * Return:
+    		 * id if OK
+    		 * -1 else
+    		 */
             frigate_name_id_type register_name(std::string name);
+    		/**
+    		 * Return:
+    		 * id if OK
+    		 * -1 else
+    		 */
             frigate_name_id_type search_name(std::string name);
+    		/**
+    		 * Return:
+    		 * name if exist
+    		 * NULL else
+    		 */
             char* get_name(const frigate_name_id_type name_id);
 
         private:

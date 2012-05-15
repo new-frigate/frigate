@@ -38,6 +38,28 @@ Line_dynamic_array<Body_type>::~Line_dynamic_array()
 }
 /******************************************************************************/
 template <class Body_type>
+void Line_dynamic_array<Body_type>::erase()
+{
+	if(data!=NULL)
+	{
+		for(int i=0;i<num_records;i++)
+		{
+			if(data[i]!=NULL)
+			{
+				delete data[i];
+				data[i]=NULL;
+			}
+		}
+		free(data);
+		data=NULL;
+	}
+	
+	num_records=0;
+	current_internal_array_size=0;
+	return;
+}
+/******************************************************************************/
+template <class Body_type>
 Line_dynamic_array<Body_type>::Line_dynamic_array(const Line_dynamic_array<Body_type>& arr)
 {
 	if (data!=NULL)

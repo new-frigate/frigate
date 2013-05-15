@@ -10,6 +10,7 @@
 
 namespace frigate
 {
+class Vertex;
 //////////////////////////////
 // Vertices
 
@@ -20,7 +21,7 @@ namespace frigate
 	{
 	public:
 		virtual void toFile(std::ofstream& out) = 0;
-		virtual ~VerticeBlock(){};
+		virtual ~VerticeBlock(){printf("verticeBlock destr\n");}
 		virtual VerticeBlock* copy() = 0;
 	};
     /**
@@ -51,11 +52,17 @@ namespace frigate
 	public:
         CodeBlock(const CodeBlock&);
         CodeBlock():code(NULL), file_name(NULL), io_volume(NULL), code_volume(NULL){};
+        CodeBlock& operator=(const CodeBlock&);
         int setCode(char* _code);
         int setIOVolume(char*);
         int setCodeVolume(char*);
         int setFileName(char* filename);
         void toFile(std::ofstream& out);
+        const bool isEmpty()
+        {
+        	if(!code && !file_name) return true;
+        	return false;
+        }
         CodeBlock* copy();
         ~CodeBlock();
     };
@@ -87,11 +94,13 @@ namespace frigate
     class VertexTemplate
     {
     protected:
-    	frigate_name_id_type name_id;
+    	frigate_name_id_type vt_name_id;
     	Line_dynamic_array<VerticeBlock> inside_blocks;
 	public:
-    	VertexTemplate():name_id(-1) {}
+    	VertexTemplate():vt_name_id(-1), inside_blocks() {}
+    	~VertexTemplate(){printf("vertex template dest\n");}
     	VertexTemplate* copy();
+    	void deepCopy(Vertex* child);
     	int setName(char*);
         void toFile(std::ofstream& out);
         int setVerticeBlocks(Line_dynamic_array<VerticeBlock>&);
@@ -108,6 +117,7 @@ namespace frigate
     	frigate_name_id_type template_name_id;
 
     public:
+    	~Vertex(){printf("Vertex destr\n");}
     	Vertex():name_id(-1), template_name_id(-1){}
     	int setTemplateName(char*);
         void toFile(std::ofstream& out);
@@ -115,7 +125,7 @@ namespace frigate
     };
 
 
-////////////////////////////////////////////
+///////////////////////////////////////////
 // Edges
 
     /**
@@ -263,6 +273,7 @@ namespace frigate
 
     public:
         Subgraph();
+        //~Subgraph();
         void toFile(std::ofstream& out);
         int setName(char*);
         void setCondition(CodeBlock& _cond){condition_code = _cond;}
@@ -327,7 +338,7 @@ namespace frigate
 			edge_templates = _edge_templates;
 		}
 		void toFile(std::ofstream& out);
-		int toFile(char* filename);
+		int toFile(const char* filename);
 
     };
 

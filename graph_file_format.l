@@ -437,7 +437,7 @@ NUMBER [0-9]+
                                     }
 
                                   *yylval=&(yytext[1]);
-                                  yytext[yyleng-1]='\0';
+                                  yytext[yyleng-2]='\0';
                                   return CODE_CLAUSE;
                                }
 [ \t\n\r]+                     {

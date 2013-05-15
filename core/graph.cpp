@@ -15,6 +15,7 @@ int CodeBlock::setCode(char* _code)
 	{
 		code = new char[strlen(_code)];
 		strcpy(code, _code);
+		printf("ohuenchik %s \n", _code);
 		return 0;
 	}
 	return 1;
@@ -79,6 +80,11 @@ int Graph::setMainSubgraph(char* main_subgraph_name)
 
 Subgraph::Subgraph():name_id(-1), predefined_condition_value(){}
 
+//Subgraph::~Subgraph()
+//{
+//	printf("Hello, i'm your destructor\n");
+//}
+
 Subgraph* Subgraph::copy()
 {
 	Subgraph* sbgrph = new Subgraph();
@@ -126,6 +132,7 @@ ExternalEdge* ExternalEdge::copy()
 int ExternalEdge::setSendCoords(char* subgraph, char* vert, char* exchange)
 {
 	registerName(subgraph, &send_subgraph_id);
+
 	registerName(vert, &send_vertex_id);
 	registerName(exchange, &send_exchange_block_id);
 	return 0;
@@ -144,13 +151,14 @@ int VertexTemplate::setName(char* name)
 	int id = Graph::Names.register_name(name);
 	if(id == -1)
 		return -1;
-	name_id = id;
+	vt_name_id = id;
 	return 0;
 }
 
 Vertex* Vertex::copy()
 {
 	Vertex* _v = new Vertex();
+	this->deepCopy(_v);
 	_v->name_id = name_id;
 	_v->template_name_id = template_name_id;
 	return _v;
@@ -346,9 +354,16 @@ int EdgeTemplate::registerName(char* str, int* param_id)
 VertexTemplate* VertexTemplate::copy()
 {
 	VertexTemplate* _vt = new VertexTemplate();
-	_vt->name_id = name_id;
+	_vt->vt_name_id = vt_name_id;
 	_vt->inside_blocks = inside_blocks;
 	return _vt;
+}
+
+void VertexTemplate::deepCopy(Vertex* child)
+{
+	child->vt_name_id = vt_name_id;
+	child->inside_blocks = inside_blocks;
+	return;
 }
 
 int VertexTemplate::setVerticeBlocks(Line_dynamic_array<VerticeBlock>& blocks)
@@ -362,13 +377,25 @@ int VertexTemplate::setVerticeBlocks(Line_dynamic_array<VerticeBlock>& blocks)
 CodeBlock::~CodeBlock()
 {
 	if(code != NULL)
+	{
 		delete [] code;
+		code = NULL;
+	}
 	if(file_name != NULL)
+	{
 		delete [] file_name;
+		file_name = NULL;
+	}
 	if(io_volume != NULL)
+	{
 		delete [] io_volume;
+		io_volume = NULL;
+	}
 	if(code_volume != NULL)
+	{
 		delete [] code_volume;
+		code_volume = NULL;
+	}
 }
 
 CodeBlock::CodeBlock(const CodeBlock& _cb)
@@ -393,6 +420,50 @@ CodeBlock::CodeBlock(const CodeBlock& _cb)
 		code_volume = new char[strlen(_cb.code_volume)];
 		strcpy(code_volume, _cb.code_volume);
 	}
+}
+
+CodeBlock& CodeBlock::operator=(const CodeBlock& _cb)
+{
+	if (this != &_cb)
+	{
+		if (code != NULL)
+			delete [] code;
+		if (_cb.code != NULL)
+		{
+			code = new char[strlen(_cb.code)];
+			strcpy(code, _cb.code);
+		}
+		else
+			code = NULL;
+		if (file_name != NULL)
+			delete [] file_name;
+		if (_cb.file_name != NULL)
+		{
+			file_name = new char[strlen(_cb.file_name)];
+			strcpy(file_name, _cb.file_name);
+		}
+		else
+			file_name = NULL;
+		if (io_volume != NULL)
+			delete [] io_volume;
+		if (_cb.io_volume != NULL)
+		{
+			io_volume = new char[strlen(_cb.io_volume)];
+			strcpy(io_volume, _cb.io_volume);
+		}
+		else
+			io_volume = NULL;
+		if (code_volume != NULL)
+			delete [] code_volume;
+		if (_cb.code_volume != NULL)
+		{
+			code_volume = new char[strlen(_cb.code_volume)];
+			strcpy(code_volume, _cb.code_volume);
+		}
+		else
+			code_volume = NULL;
+	}
+	return *this;
 }
 
 CodeBlock* CodeBlock::copy()

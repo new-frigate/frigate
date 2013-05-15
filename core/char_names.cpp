@@ -13,7 +13,7 @@
 		}
 		IdDB.insert( std::pair<int, std::string >(id_count, name));
 		id_count++;
-		return (frigate_name_id_type)id_count;
+		return (frigate_name_id_type)id_count-1;
 	}
 
 	frigate_name_id_type CharNames::search_name(std::string name)
@@ -28,7 +28,6 @@
 		}
 		return -1;
 	}
-
 	char* CharNames::get_name(const frigate_name_id_type name_id)
 	{
 		std::map<frigate_name_id_type, std::string>::iterator it;

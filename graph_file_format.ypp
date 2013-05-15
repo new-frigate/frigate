@@ -10,9 +10,9 @@ using namespace frigate;
 #include "graph_file_format.tab.hpp"
 
 #define YYSTYPE char*
-#define YYPARSE_PARAM output_param
+#define YYPARSE_PARAM param
 
-int yylex(YYSTYPE *value,YYLTYPE *location);
+extern int yylex(YYSTYPE *value,YYLTYPE *location);
 
 /*
  * It seems for me that it will work only 
@@ -24,16 +24,16 @@ int yylex(YYSTYPE *value,YYLTYPE *location);
 
 void my_yyerror(struct YYLTYPE *locp,const char *str);
 
-Graph* main_grph = NULL;
+Graph* main_grph;
 Line_dynamic_array<Subgraph> 		SGs;
 Line_dynamic_array<ExternalEdge> 	EEs;
 Line_dynamic_array<EdgeTemplate> 	ETs;
 Line_dynamic_array<VertexTemplate> 	VTs;
-Line_dynamic_array<Vertex> 		 Vs;
+Line_dynamic_array<Vertex> 		 	Vs;
 Line_dynamic_array<VerticeBlock> 	VBs;
 Line_dynamic_array<ControlEdge> 	CEs;
 Line_dynamic_array<InternalEdge> 	IEs;
-Line_dynamic_array<Fragment>		 Fs;
+Line_dynamic_array<Fragment>		Fs;
  
 %}
 
@@ -131,15 +131,22 @@ Line_dynamic_array<Fragment>		 Fs;
 %%
 graph: 	comments  GRAPH_BEGIN_TAG
 	{		
-		main_grph = new Graph();
+		main_grph = (Graph*) param;
 	}  
 	comments graph_declarations comments main_subgraph graph_entry comments GRAPH_END_TAG comments
 	{
+		printf("loool\n");
 		main_grph->setEntries(SGs, EEs, VTs, ETs);
+		printf("trololo\n");
 		SGs.erase();
+		printf("SGs.erase(); OK\n");
 		EEs.erase();
+		printf("EEs.erase(); OK\n");
 		ETs.erase();
+		printf("ETs.erase(); OK\n");
 		VTs.erase();
+		printf("VTs.erase(); OK\n");
+		printf("OKOKOK\n");
 	}
      	;
 
@@ -223,20 +230,25 @@ subgraph:
 	SUBGRAPH_BEGIN_TAG 
 	{
 		Subgraph* subgraph = new Subgraph();
+		printf("Создали подграф\n");
 		SGs.add_element(subgraph);
+		printf("Dobavili podgraph\n");
 		delete subgraph;
+		printf("Udalili staryy\n");
 	}
 	comments name_clause comments condition_clause comments subgraph_entry comments SUBGRAPH_END_TAG
 	{
 		Subgraph* subgraph = SGs.look_position(SGs.num_elements()-1);
-		subgraph->setName($3);
+		subgraph->setName($4);
 		CodeBlock cond;
-		cond.setCode($5);
+		cond.setCode($6);
 		subgraph->setCondition(cond);
 		subgraph->setEntries(Vs, IEs, CEs);
+		printf("1?\n");
 		Vs.erase();
 		IEs.erase();
 		CEs.erase();
+		printf("A tut?\n");
 	}
         ;
 
@@ -249,6 +261,7 @@ name_clause: NAME_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE
 condition_clause: CONDITION_KEY_WORD comments '=' comments CODE_CLAUSE WHITE_SPACE
 	{
 		$$ = $5;
+		printf("this is condition clause %s \n", $$);
 	}
         ;
 
@@ -268,6 +281,7 @@ vertex: VERTEX_BEGIN_TAG
 	{
 		Vertex* vertex = Vs.look_position(Vs.num_elements()-1);
 		vertex->setName($4);
+		printf("Vertex name = %s\n", $4);
 	}
       	;
 
@@ -276,10 +290,12 @@ vertex_entry:
 	{
 		Vertex* vertex = Vs.look_position(Vs.num_elements()-1);
 		vertex->setTemplateName($1);
+		printf("Template name = %s\n", $1);
 	} 
         | vertex_body_clause
 	{
 		Vertex* vertex = Vs.look_position(Vs.num_elements()-1);
+		printf("WRONG!!!\n");
 		vertex->setVerticeBlocks(VBs);
 		VBs.erase();
 	}

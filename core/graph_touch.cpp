@@ -6,7 +6,7 @@
 namespace frigate
 {
 
-int Graph::toFile(char* filename)
+int Graph::toFile(const char* filename)
 {
 	std::ofstream out;
 	out.open(filename);
@@ -24,19 +24,52 @@ void Graph::toFile(std::ofstream& out)
 	out << "<graph>" << std::endl;
 	out << "version = " << version << std::endl;
 
-	header.toFile(out);
-	root.toFile(out);
-	tail.toFile(out);
-	out << "main_subgraph = \"" << Graph::Names.get_name(main_subgraph_id) << '\"' << std::endl;
+	if(!header.isEmpty())
+	{
+		out<< "<header>" << std::endl;
+		header.toFile(out);
+		out<< "</header>" << std::endl;
+	}
+	if(!root.isEmpty())
+	{
+		out<< "<root>" << std::endl;
+		root.toFile(out);
+		out<< "</root>" << std::endl;
+	}
+	if(!tail.isEmpty())
+	{
+		out<< "<tail>" << std::endl;
+		tail.toFile(out);
+		out<< "</tail>" << std::endl;
+	}
+	char* main_subgraph_name = Graph::Names.get_name(main_subgraph_id);
+	if(main_subgraph_name)
+		out << "main_subgraph = \"" << main_subgraph_name << '\"' << std::endl;
 
 	for(int i = 0; i<subgraphs.num_elements(); ++i)
+	{
+		out<< "<subgraph>" << std::endl;
 		subgraphs.get_elem(i)->toFile(out);
+		out<< "</subgraph>" << std::endl;
+	}
 	for(int i = 0; i<external_edges.num_elements(); ++i)
+	{
+		out<< "<external_edge>" << std::endl;
 		external_edges.get_elem(i)->toFile(out);
+		out<< "</external_edge>" << std::endl;
+	}
 	for(int i = 0; i<vertex_templates.num_elements(); ++i)
+	{
+		out<< "<vertex_template>" << std::endl;
 		vertex_templates.get_elem(i)->toFile(out);
+		out<< "</vertex_template>" << std::endl;
+	}
 	for(int i = 0; i<edge_templates.num_elements(); ++i)
+	{
+		out<< "<edge_template>" << std::endl;
 		edge_templates.get_elem(i)->toFile(out);
+		out<< "</edge_template>" << std::endl;
+	}
 
 	out << "</graph>" << std::endl;
 	return;
@@ -146,7 +179,7 @@ void Vertex::toFile(std::ofstream& out)
 void VertexTemplate::toFile(std::ofstream& out)
 {
 	out << "<vertex_template>" << std::endl;
-	out << "name = " << Graph::Names.get_name(name_id) << std::endl;
+	out << "name = " << Graph::Names.get_name(vt_name_id) << std::endl;
 
 	for(int i = 0; i<inside_blocks.num_elements(); ++i)
 	{
@@ -188,14 +221,14 @@ void CodeBlock::toFile(std::ofstream& out)
 	if(io_volume != NULL)
 		out << "io_volume = " << io_volume << std::endl;
 	if(code_volume != NULL)
-		out << "code_volume" << code_volume << std::endl;
+		out << "code_volume = " << code_volume << std::endl;
 	if(code == NULL)
 	{
-		out << "file = " << file_name << std::endl;
+		out << "file = \"" << file_name << "\"" <<std::endl;
 	}
 	else
 	{
-		out << code;
+		out << "@\n	" << code << "\n@\n";
 	}
 	return;
 }

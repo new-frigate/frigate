@@ -23,9 +23,9 @@ int CodeBlock::setCode(char* _code)
 
 int CodeBlock::setFileName(char* filename)
 {
-	if(code == NULL && file_name == NULL)
+	if((code == NULL) && (file_name == NULL))
 	{
-		file_name = new char[strlen(filename)];
+		file_name = new char[strlen(filename)+1];
 		strcpy(file_name, filename);
 		return 0;
 	}

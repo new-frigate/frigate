@@ -18,7 +18,7 @@ Line_dynamic_array<Body_type>::Line_dynamic_array()
 template <class Body_type>
 Line_dynamic_array<Body_type>::~Line_dynamic_array()
 {
-	printf("Enter to destr %d\n", (int)data);
+	printf("Enter to destr %p\n", data);
 	if(data!=NULL)
 	{
 		for(int i=0;i<num_records;i++)

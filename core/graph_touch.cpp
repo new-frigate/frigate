@@ -49,25 +49,25 @@ void Graph::toFile(std::ofstream& out)
 	for(int i = 0; i<subgraphs.num_elements(); ++i)
 	{
 		out<< "<subgraph>" << std::endl;
-		subgraphs.get_elem(i)->toFile(out);
+		subgraphs.look_position(i)->toFile(out);
 		out<< "</subgraph>" << std::endl;
 	}
 	for(int i = 0; i<external_edges.num_elements(); ++i)
 	{
 		out<< "<external_edge>" << std::endl;
-		external_edges.get_elem(i)->toFile(out);
+		external_edges.look_position(i)->toFile(out);
 		out<< "</external_edge>" << std::endl;
 	}
 	for(int i = 0; i<vertex_templates.num_elements(); ++i)
 	{
 		out<< "<vertex_template>" << std::endl;
-		vertex_templates.get_elem(i)->toFile(out);
+		vertex_templates.look_position(i)->toFile(out);
 		out<< "</vertex_template>" << std::endl;
 	}
 	for(int i = 0; i<edge_templates.num_elements(); ++i)
 	{
 		out<< "<edge_template>" << std::endl;
-		edge_templates.get_elem(i)->toFile(out);
+		edge_templates.look_position(i)->toFile(out);
 		out<< "</edge_template>" << std::endl;
 	}
 
@@ -77,21 +77,19 @@ void Graph::toFile(std::ofstream& out)
 
 void Subgraph::toFile(std::ofstream& out)
 {
-	out << "<subgraph>" << std::endl;
 
 	out << "name = " << Graph::Names.get_name(name_id) << std::endl;
 	out << "condition = ";
 	condition_code.toFile(out);
 	out << std::endl;
 	for(int i = 0; i<vertices.num_elements(); ++i)
-		vertices.get_elem(i)->toFile(out);
+		vertices.look_position(i)->toFile(out);
 	for(int i = 0; i<internal_edges.num_elements(); ++i)
-		internal_edges.get_elem(i)->toFile(out);
+		internal_edges.look_position(i)->toFile(out);
 	for(int i = 0; i<control_edges.num_elements(); ++i)
-		control_edges.get_elem(i)->toFile(out);
+		control_edges.look_position(i)->toFile(out);
 
-	out << "</subgraph>" << std::endl;
-	return;
+return;
 }
 
 void ExternalEdge::toFile(std::ofstream& out)

@@ -18,18 +18,14 @@ Line_dynamic_array<Body_type>::Line_dynamic_array()
 template <class Body_type>
 Line_dynamic_array<Body_type>::~Line_dynamic_array()
 {
-	printf("Enter to destr %p\n", data);
 	if(data!=NULL)
 	{
 		for(int i=0;i<num_records;i++)
 		{
 			if(data[i]!=NULL)
 			{
-				printf("I try to delete data\n");
 				delete data[i];
-				printf("data[i] deleted\n");
 				data[i]=NULL;
-				printf("data deleted\n");
 			}
 		}
 		free(data);

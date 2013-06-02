@@ -135,18 +135,11 @@ graph: 	comments  GRAPH_BEGIN_TAG
 	}  
 	comments graph_declarations comments main_subgraph graph_entry comments GRAPH_END_TAG comments
 	{
-		printf("loool\n");
 		main_grph->setEntries(SGs, EEs, VTs, ETs);
-		printf("trololo\n");
-		SGs.erase();
-		printf("SGs.erase(); OK\n");
-		EEs.erase();
-		printf("EEs.erase(); OK\n");
-		ETs.erase();
-		printf("ETs.erase(); OK\n");
-		VTs.erase();
-		printf("VTs.erase(); OK\n");
-		printf("OKOKOK\n");
+		//SGs.erase();
+		//EEs.erase(); /// TODO: debug
+		//ETs.erase();
+		//VTs.erase();
 	}
      	;
 
@@ -230,11 +223,8 @@ subgraph:
 	SUBGRAPH_BEGIN_TAG 
 	{
 		Subgraph* subgraph = new Subgraph();
-		printf("Создали подграф\n");
 		SGs.add_element(subgraph);
-		printf("Dobavili podgraph\n");
 		delete subgraph;
-		printf("Udalili staryy\n");
 	}
 	comments name_clause comments condition_clause comments subgraph_entry comments SUBGRAPH_END_TAG
 	{
@@ -244,11 +234,9 @@ subgraph:
 		cond.setCode($6);
 		subgraph->setCondition(cond);
 		subgraph->setEntries(Vs, IEs, CEs);
-		printf("1?\n");
 		Vs.erase();
 		IEs.erase();
 		CEs.erase();
-		printf("A tut?\n");
 	}
         ;
 
@@ -261,7 +249,6 @@ name_clause: NAME_KEY_WORD comments '=' comments STRING_VALUE WHITE_SPACE
 condition_clause: CONDITION_KEY_WORD comments '=' comments CODE_CLAUSE WHITE_SPACE
 	{
 		$$ = $5;
-		printf("this is condition clause %s \n", $$);
 	}
         ;
 
@@ -281,7 +268,6 @@ vertex: VERTEX_BEGIN_TAG
 	{
 		Vertex* vertex = Vs.look_position(Vs.num_elements()-1);
 		vertex->setName($4);
-		printf("Vertex name = %s\n", $4);
 	}
       	;
 
@@ -290,12 +276,10 @@ vertex_entry:
 	{
 		Vertex* vertex = Vs.look_position(Vs.num_elements()-1);
 		vertex->setTemplateName($1);
-		printf("Template name = %s\n", $1);
 	} 
         | vertex_body_clause
 	{
 		Vertex* vertex = Vs.look_position(Vs.num_elements()-1);
-		printf("WRONG!!!\n");
 		vertex->setVerticeBlocks(VBs);
 		VBs.erase();
 	}
@@ -403,7 +387,7 @@ vertex_template:
 	{
 		VertexTemplate* vertex_template = VTs.look_position(VTs.num_elements()-1);
 		vertex_template->setName($4);
-		vertex_template->setVerticeBlocks(VBs);
+//		vertex_template->setVerticeBlocks(VBs);
 		VBs.erase();
 	}
         ;

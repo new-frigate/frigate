@@ -21,7 +21,7 @@ class Vertex;
 	{
 	public:
 		virtual void toFile(std::ofstream& out) = 0;
-		virtual ~VerticeBlock(){printf("verticeBlock destr\n");}
+		virtual ~VerticeBlock(){}
 		virtual VerticeBlock* copy() = 0;
 	};
     /**
@@ -97,8 +97,8 @@ class Vertex;
     	frigate_name_id_type vt_name_id;
     	Line_dynamic_array<VerticeBlock> inside_blocks;
 	public:
-    	VertexTemplate():vt_name_id(-1), inside_blocks() {}
-    	~VertexTemplate(){printf("vertex template dest\n");}
+    	VertexTemplate():vt_name_id(-1), inside_blocks(){}
+    	virtual ~VertexTemplate(){}
     	VertexTemplate* copy();
     	void deepCopy(Vertex* child);
     	int setName(char*);
@@ -117,7 +117,7 @@ class Vertex;
     	frigate_name_id_type template_name_id;
 
     public:
-    	~Vertex(){printf("Vertex destr\n");}
+    	~Vertex(){}
     	Vertex():name_id(-1), template_name_id(-1){}
     	int setTemplateName(char*);
         void toFile(std::ofstream& out);

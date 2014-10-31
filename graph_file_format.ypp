@@ -10,7 +10,10 @@ using namespace frigate;
 #include "graph_file_format.tab.hpp"
 
 #define YYSTYPE char*
+
+/*
 #define YYPARSE_PARAM param
+*/
 
 extern int yylex(YYSTYPE *value,YYLTYPE *location);
 
@@ -18,11 +21,15 @@ extern int yylex(YYSTYPE *value,YYLTYPE *location);
  * It seems for me that it will work only 
  * in bison parser.  
  */
-#define yyerror(str) my_yyerror(&yylloc,(str))
+
+/*
+#define yyerror(str) my_yyerror(&yylloc,NULL,(str))
+*/
+#define yyerror my_yyerror
 
 #define GREAT_ERROR exit(1)
 
-void my_yyerror(struct YYLTYPE *locp,const char *str);
+void my_yyerror(struct YYLTYPE *locp,void *param, const char *str);
 
 Graph* main_grph;
 Line_dynamic_array<Subgraph> 		SGs;
@@ -45,6 +52,8 @@ Line_dynamic_array<Fragment>		Fs;
 	Subgraph *subgrph;
 }
 */
+
+%parse-param {void *param}
 
 %error-verbose
 %locations
@@ -608,7 +617,7 @@ control_edge_send_coords:
 %%
 
 
-void my_yyerror(struct YYLTYPE *locp,const char *err_str)
+void my_yyerror(struct YYLTYPE *locp, void *param, const char *err_str)
 {
 	printf
 	(

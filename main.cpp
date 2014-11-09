@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "core/graph.h"
 
-extern int yyparse(void *param);
+extern int yyparse(frigate::Graph *graph);
 extern int yydebug;
 
 /*
@@ -34,14 +34,14 @@ int main(int argc, char **argv) {
 	buf = stdin;
 	stdin = f;
 
-	Graph* graph = new Graph();
-	flag = yyparse((void*) graph);
+	Graph graph;
+	flag = yyparse(&graph);
 
 	stdin = buf;
 	printf("Parsing finished with value %d\n", flag);
 
 	if (!flag) {
-		graph->toFile("test.txt");
+		graph.toFile("test.txt");
 	}
 
 	fclose(f);

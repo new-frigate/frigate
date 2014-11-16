@@ -121,6 +121,43 @@ int Line_dynamic_array<Body_type>::add_element
 }
 /******************************************************************************/
 template <class Body_type>
+int Line_dynamic_array<Body_type>::add_element_uncopy
+(
+	Body_type *element
+)
+{
+		
+	if(element==NULL)
+	{
+		return LINE_DYNAMIC_ARRAY_ERROR;
+	}
+
+    if(num_records==current_internal_array_size)
+	{
+		Body_type **new_array=NULL;
+	
+		int new_array_size=current_internal_array_size+
+		INTERNAL_ARRAY_ALONGATION_SIZE;
+		
+		new_array=(Body_type **)realloc(data,new_array_size*sizeof(Body_type *));
+		if(new_array==NULL)
+		{
+			return LINE_DYNAMIC_ARRAY_ERROR;
+		}
+
+		data=new_array;
+		current_internal_array_size=new_array_size;
+	}
+
+
+	data[num_records]=element;
+	num_records++;
+	
+	return LINE_DYNAMIC_ARRAY_SUCCESS;
+}
+
+/******************************************************************************/
+template <class Body_type>
 int  Line_dynamic_array<Body_type>::delete_element(int position)
 {
 	if((position<0)||(position>=num_records))

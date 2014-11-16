@@ -68,6 +68,20 @@ public:
 	  *                              key already registered in set.
 	  */
 	 int add_element(Body_type *element);
+    
+     /**
+	  * Add new element to set.
+	  *
+	  * This method does not call method copy() of elements.
+	  *
+	  * Return:
+	  *   LINE_DYNAMIC_ARRAY_SUCCESS if OK,
+	  *   LINE_DYNAMIC_ARRAY_ERROR if error occurred,
+	  *   LINE_DYNAMIC_ARRAY_ALREADY_EXISTS if the element with a specified 
+	  *                              key already registered in set.
+	  */
+	 int add_element_uncopy(Body_type *element);
+
 
 	 /**
 	  * This method search element in the 

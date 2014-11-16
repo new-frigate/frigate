@@ -6,7 +6,7 @@
 /* STL does not understand this type
 #define frigate_name_id_type int64_t
 */
-#define frigate_name_id_type long
+#define frigate_name_id_type int
 
 
 enum Vertex_region_types

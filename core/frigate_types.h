@@ -1,7 +1,7 @@
 #ifndef __FRIGATE_FRIGATE_TYPES_H__
 #define __FRIGATE_FRIGATE_TYPES_H__
 
-#include <cinttypes>
+#include <inttypes.h>
 
 /* STL does not understand this type
 #define frigate_name_id_type int64_t

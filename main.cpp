@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "core/graph.h"
+#include "core/graph/graph.h"
 
 extern int yyparse(frigate::Graph *graph);
 extern int yydebug;

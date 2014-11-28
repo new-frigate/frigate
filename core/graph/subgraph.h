@@ -1,8 +1,11 @@
 #ifndef __FRIGATE_SUBGRAPH_H__
 #define __FRIGATE_SUBGRAPH_H__
 
-#include "line_dynamic_array.h"
+#include "../line_dynamic_array.h"
 #include "code_block.h"
+#include "edge.h"
+#include "vertex.h"
+#include <fstream>
 
 namespace frigate
 {

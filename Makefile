@@ -17,7 +17,11 @@ lex.yy.c: graph_file_format.l
 
 
 parser:		core/char_names.cpp \
-		core/graph.cpp \
+		core/graph/code_block.cpp \
+		core/graph/vertex.cpp \
+		core/graph/edge.cpp \
+		core/graph/subgraph.cpp \
+		core/graph/graph.cpp \
 		core/graph_touch.cpp \
 		core/line_dynamic_array_int.cpp \
 		graph_file_format.tab.cpp \

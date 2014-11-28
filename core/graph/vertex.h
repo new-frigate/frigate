@@ -1,11 +1,14 @@
 #ifndef __FRIGATE_VERTEX_H__
 #define __FRIGATE_VERTEX_H__
 
-#include "line_dynamic_array.h"
-#include "frigate_types.h"
+#include "../line_dynamic_array.h"
+#include "../frigate_types.h"
+#include <fstream>
 
 namespace frigate
 {
+
+    class Vertex;
 
     struct Vertex_region
     {
@@ -17,11 +20,11 @@ namespace frigate
      * This class is need for possibility of multiple exchanges in one vertex
      * It contains IDs of opposite vertices
      */
-    class ExchangeBlock/// : public VerticeBlock
+    class ExchangeBlock
     {
     protected:
     	frigate_name_id_type name_id;
-    	Line_dynamic_array<frigate_name_id_type> send;//Не трогаем???
+    	Line_dynamic_array<frigate_name_id_type> send;
     	Line_dynamic_array<frigate_name_id_type> recv;
 
 	public:
@@ -49,7 +52,6 @@ namespace frigate
     	void deepCopy(Vertex* child);
     	int setName(char*);
         void toFile(std::ofstream& out);
-        ///int setVerticeBlocks(Line_dynamic_array<VerticeBlock>&);
         int setVerticeBlocks(Line_dynamic_array<Vertex_region>&);
     };
 

@@ -1,8 +1,9 @@
 #ifndef __FRIGATE_EDGE_H__
 #define __FRIGATE_EDGE_H__
 
-#include "line_dynamic_array.h"
+#include "../line_dynamic_array.h"
 #include "code_block.h"
+#include <fstream>
 
 namespace frigate
 {

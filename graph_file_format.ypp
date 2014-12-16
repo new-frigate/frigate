@@ -343,12 +343,12 @@ code_declarations:
 code_block_clause:
       CODE_CLAUSE[code] WHITE_SPACE
         {
-            CodeBlock* code_block = dynamic_cast<CodeBlock*> (vertex_blocks.look_position(vertices.num_elements()-1));
+            CodeBlock* code_block = dynamic_cast<CodeBlock*> (vertex_blocks.look_position(vertex_blocks.num_elements()-1));
             code_block->setCode($code);
         }
     | FILE_KEY_WORD comments '=' comments STRING_VALUE[file_name] WHITE_SPACE
         {
-            CodeBlock* code_block = dynamic_cast<CodeBlock*> (vertex_blocks.look_position(vertices.num_elements()-1));
+            CodeBlock* code_block = dynamic_cast<CodeBlock*> (vertex_blocks.look_position(vertex_blocks.num_elements()-1));
             code_block->setFileName($file_name);
         }
     ;
@@ -356,7 +356,7 @@ code_block_clause:
 io_volume_weight_clause:
     IO_VOLUME_KEY_WORD comments '=' comments CODE_CLAUSE[code] WHITE_SPACE
         {
-            CodeBlock* code_block = dynamic_cast<CodeBlock*> (vertex_blocks.look_position(vertices.num_elements()-1));
+            CodeBlock* code_block = dynamic_cast<CodeBlock*> (vertex_blocks.look_position(vertex_blocks.num_elements()-1));
             code_block->setIOVolume($code);
         }
     ;
@@ -364,7 +364,7 @@ io_volume_weight_clause:
 code_volume_weight_clause:
     CODE_VOLUME_KEY_WORD comments '=' comments CODE_CLAUSE[code] WHITE_SPACE
         {
-            CodeBlock* code_block = dynamic_cast<CodeBlock*> (vertex_blocks.look_position(vertices.num_elements()-1));
+            CodeBlock* code_block = dynamic_cast<CodeBlock*> (vertex_blocks.look_position(vertex_blocks.num_elements()-1));
             code_block->setCodeVolume($code);
         }
     ;
@@ -387,7 +387,7 @@ exchange_entry:
 send_clause:
     SEND_KEY_WORD comments '=' comments STRING_VALUE[name] WHITE_SPACE
         {
-            ExchangeBlock* exchange_block = dynamic_cast<ExchangeBlock*> (vertex_blocks.look_position(vertices.num_elements()-1));
+            ExchangeBlock* exchange_block = dynamic_cast<ExchangeBlock*> (vertex_blocks.look_position(vertex_blocks.num_elements()-1));
             exchange_block->addSend($name);
         }
     ;
@@ -396,7 +396,7 @@ send_clause:
 recv_clause:
     RECV_KEY_WORD comments '=' comments STRING_VALUE[name] WHITE_SPACE
         {
-            ExchangeBlock* exchange_block = dynamic_cast<ExchangeBlock*> (vertex_blocks.look_position(vertices.num_elements()-1));
+            ExchangeBlock* exchange_block = dynamic_cast<ExchangeBlock*> (vertex_blocks.look_positionvertex_blocks.num_elements()-1));
             exchange_block->addRecv($name);
         }
     ;

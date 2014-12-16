@@ -396,7 +396,7 @@ send_clause:
 recv_clause:
     RECV_KEY_WORD comments '=' comments STRING_VALUE[name] WHITE_SPACE
         {
-            ExchangeBlock* exchange_block = dynamic_cast<ExchangeBlock*> (vertex_blocks.look_positionvertex_blocks.num_elements()-1));
+            ExchangeBlock* exchange_block = dynamic_cast<ExchangeBlock*> (vertex_blocks.look_position(vertex_blocks.num_elements()-1));
             exchange_block->addRecv($name);
         }
     ;

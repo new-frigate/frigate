@@ -1,0 +1,40 @@
+# test_4 
+# Answer: Vertex template <vert_temp_1> for vertex <sub_1_vert_2> not found 
+# Description: test with unexisting vertex template
+
+<graph>
+
+	version = 1.0
+
+	<header>
+		@
+			some code here
+		@
+	</header>
+
+	<root>
+		root = "root"
+	</root>
+
+	<tail>
+		@
+			some code here
+		@
+	</tail>
+	
+	main_subgraph = "sub_1"
+
+	<subgraph>
+		name = "sub_1"
+
+		condition = @ some code here @
+
+		<vertex>
+			name = "sub_1_vert_2"
+			template = "vert_temp_1"
+		</vertex>
+
+	</subgraph>
+
+</graph>
+

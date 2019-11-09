@@ -1,0 +1,282 @@
+graph:
+    comments  
+    GRAPH_BEGIN_TAG 
+        comments graph_declarations 
+        comments main_subgraph graph_entry
+        comments 
+    GRAPH_END_TAG
+    comments
+
+comments:
+    | comments COMMENT_STRING
+    | comments WHITE_SPACE
+
+graph_declarations:
+    version_clause comments header_clause comments root_clause comments tail_clause
+
+header_clause:
+    | HEADER_BEGIN_TAG comments HEADER_KEY_WORD comments '=' comments STRING_VALUE[file_name] WHITE_SPACE comments HEADER_END_TAG
+    | HEADER_BEGIN_TAG comments CODE_CLAUSE[code] comments HEADER_END_TAG
+    
+root_clause:
+    | ROOT_BEGIN_TAG comments ROOT_KEY_WORD comments '=' comments STRING_VALUE[file_name] WHITE_SPACE comments ROOT_END_TAG
+    | ROOT_BEGIN_TAG comments CODE_CLAUSE[code] comments ROOT_END_TAG
+
+tail_clause:
+    | TAIL_BEGIN_TAG comments TAIL_KEY_WORD comments '=' comments STRING_VALUE[file_name] WHITE_SPACE comments TAIL_END_TAG
+    | TAIL_BEGIN_TAG comments CODE_CLAUSE[code] comments TAIL_END_TAG
+
+graph_entry:
+    | graph_entry  comments  subgraph
+    | graph_entry  comments  external_edge
+    | graph_entry  comments  edge_template
+    | graph_entry  comments  vertex_template
+
+version_clause:
+    VERSION_KEY_WORD  comments '=' comments POSITIVE_FLOAT_POINT_VALUE[version] WHITE_SPACE
+
+main_subgraph:  /* If Empty then the first subgraph in graph file will be choisen as main */
+    | MAIN_SUBGRAPH_KEY_WORD comments '=' comments STRING_VALUE[subgraph_name] WHITE_SPACE
+
+subgraph:
+    SUBGRAPH_BEGIN_TAG
+        comments name_clause[name]
+        comments condition_clause[condition]
+        comments subgraph_entry 
+        comments
+    SUBGRAPH_END_TAG
+
+name_clause:
+    NAME_KEY_WORD comments '=' comments STRING_VALUE[string] WHITE_SPACE
+
+condition_clause:
+    CONDITION_KEY_WORD comments '=' comments CODE_CLAUSE[code] WHITE_SPACE
+
+subgraph_entry:
+    | subgraph_entry comments vertex
+    | subgraph_entry comments internal_edge
+    | subgraph_entry comments control_edge
+
+--------------------------------------------------------------------------------
+
+# HAS BEEN CHANGED
+
+# WAS
+
+vertex:
+    VERTEX_BEGIN_TAG
+    comments name_clause[name] comments vertex_entry VERTEX_END_TAG
+
+# BECOME 
+
+vertex:
+	| VERTEX_BEGIN_TAG comments name_clause comments template_name_clause 
+		comments VERTEX_END_TAG
+	| VERTEX_BEGIN_TAG comments name_clause comments vertex_body_clause
+		comments VERTEX_END_TAG
+
+--------------------------------------------------------------------------------
+
+# HAS BEEN REMOVED
+
+vertex_entry:
+      template_name_clause[name] comments
+    | vertex_body_clause
+
+--------------------------------------------------------------------------------
+
+template_name_clause:
+    TEMPLATE_NAME_KEY_WORD comments '=' comments STRING_VALUE[name] WHITE_SPACE
+
+vertex_body_clause:
+      code_volume_clause comments
+    | exchange_clause    comments
+    | code_volume_clause comments vertex_body_clause
+    | exchange_clause    comments vertex_body_clause
+
+--------------------------------------------------------------------------------
+# HAS BEEN CHANGED
+
+# WAS
+
+code_volume_clause:
+    CODE_BEGIN_TAG
+    comments code_declarations code_block_clause comments CODE_END_TAG
+
+--------------------------------------------------------------------------------
+
+# BECOME
+
+code_volume_clause:
+	| CODE_BEGIN_TAG comments code_declaration CODE_CLAUSE WHITE_SPACE  
+		comments CODE_END_TAG
+	| CODE_BEGIN_TAG code_declaration FILE_KEY_WORD comments '=' comments
+		STRING_VALUE WHITE_SPACE comments CODE_END_TAG
+	| CODE_BEGIN_TAG FILE_KEY_WORD comments '=' comments
+		STRING_VALUE WHITE_SPACE comments CODE_END_TAG
+	| CODE_BEGIN_TAG comments CODE_CLAUSE WHITE_SPACE  
+		comments CODE_END_TAG
+	
+
+
+code_declarations:
+    | code_volume_weight_clause
+    | io_volume_weight_clause
+    | code_volume_weight_clause io_volume_weight_clause
+    | io_volume_weight_clause   code_volume_weight_clause
+
+--------------------------------------------------------------------------------
+# HAS BEEN REMOVED
+
+code_block_clause:
+      CODE_CLAUSE[code] WHITE_SPACE
+    | FILE_KEY_WORD comments '=' comments STRING_VALUE[file_name] WHITE_SPACE
+
+# HAS BEEN REMOVED
+--------------------------------------------------------------------------------
+
+io_volume_weight_clause:
+    IO_VOLUME_KEY_WORD comments '=' comments CODE_CLAUSE[code] WHITE_SPACE
+
+code_volume_weight_clause:
+    CODE_VOLUME_KEY_WORD comments '=' comments CODE_CLAUSE[code] WHITE_SPACE
+
+exchange_clause:
+    EXCHANGE_BEGIN_TAG
+    comments name_clause exchange_entry comments EXCHANGE_END_TAG
+
+exchange_entry:
+    | exchange_entry comments send_clause
+    | exchange_entry comments recv_clause
+
+send_clause:
+    SEND_KEY_WORD comments '=' comments STRING_VALUE[name] WHITE_SPACE
+
+
+recv_clause:
+    RECV_KEY_WORD comments '=' comments STRING_VALUE[name] WHITE_SPACE
+
+vertex_template:
+    VERTEX_TEMPLATE_BEGIN_TAG
+        comments name_clause[template_name]
+        comments vertex_body_clause
+    VERTEX_TEMPLATE_END_TAG
+
+
+edge_template:
+    EDGE_TEMPLATE_BEGIN_TAG
+        comments name_clause[template_name]
+        comments SEND_BEGIN_TAG
+            comments edge_variables_fragments
+        comments SEND_END_TAG
+        comments RECV_BEGIN_TAG
+            comments edge_variables_fragments
+        comments RECV_END_TAG comments
+    EDGE_TEMPLATE_END_TAG
+
+edge_variables_fragments:
+      edge_variables_fragment
+    | edge_variables_fragments comments edge_variables_fragment
+
+edge_variables_fragment:
+    FRAGMENT_BEGIN_TAG
+        comments variable_name_clause[variable_name]
+        comments variable_type_clause[type]
+        comments left_fragment_border_clause[left_border]
+        comments right_fragment_border_clause[right_border]
+        comments
+    FRAGMENT_END_TAG
+
+
+variable_name_clause:
+    VARIABLE_KEY_WORD comments '=' comments CODE_CLAUSE[variable_name] WHITE_SPACE
+
+variable_type_clause:
+    TYPE_KEY_WORD comments '=' comments CODE_CLAUSE[variable_type] WHITE_SPACE
+
+left_fragment_border_clause:
+    LEFT_KEY_WORD  comments '=' comments CODE_CLAUSE[border] WHITE_SPACE
+
+right_fragment_border_clause:
+    RIGHT_KEY_WORD comments '=' comments CODE_CLAUSE[border] WHITE_SPACE
+
+internal_edge:
+    INTERNAL_EDGE_BEGIN_TAG
+        comments name_clause[edge_name]
+        comments template_name_clause[template_name]
+        comments internal_edge_send_coords
+        comments internal_edge_recv_coords
+        comments
+    INTERNAL_EDGE_END_TAG
+
+external_edge: 
+    EXTERNAL_EDGE_BEGIN_TAG
+        comments name_clause[edge_name]
+        comments template_name_clause[template_name]
+        comments external_edge_send_coords
+        comments external_edge_recv_coords
+        comments
+    EXTERNAL_EDGE_END_TAG
+
+control_edge:
+    CONTROL_EDGE_BEGIN_TAG
+        comments name_clause[edge_name]
+        comments template_name_clause[template_name]
+        comments control_edge_send_coords
+        comments
+    CONTROL_EDGE_END_TAG
+
+
+internal_edge_send_coords:
+    SEND_KEY_WORD
+        comments '='
+        comments '('
+        comments STRING_VALUE[vertex]  /* Vertex  name */
+        comments ','
+        comments STRING_VALUE[exchange_region] /* Exchange region name */
+        comments ')'
+    WHITE_SPACE
+
+internal_edge_recv_coords:
+    RECV_KEY_WORD
+        comments '='
+        comments '('
+        comments STRING_VALUE[vertex]  /* Vertex  name */
+        comments ',' 
+        comments STRING_VALUE[exchange_region] /* Exchange region name */
+        comments ')' 
+    WHITE_SPACE
+
+external_edge_send_coords:
+    SEND_KEY_WORD
+        comments '=' 
+        comments '('
+        comments STRING_VALUE[subgraph]  /* Subgraph  name */
+        comments ',' 
+        comments STRING_VALUE[vertex]  /* Vertex  name */
+        comments ',' 
+        comments STRING_VALUE[exchange_region] /* Exchange region name */
+        comments ')' 
+    WHITE_SPACE
+
+external_edge_recv_coords:
+    RECV_KEY_WORD
+        comments '='
+        comments '('
+        comments STRING_VALUE[subgraph]  /* Subgraph  name */
+        comments ','
+        comments STRING_VALUE[vertex]  /* Vertex  name */
+        comments ','
+        comments STRING_VALUE[exchange_region] /* Exchange region name */
+        comments ')'
+    WHITE_SPACE
+
+control_edge_send_coords:
+    SEND_KEY_WORD
+        comments '='
+        comments '('
+        comments STRING_VALUE[vertex]  /* Vertex  name */
+        comments ','
+        comments STRING_VALUE[exchange_region] /* Exchange region name */
+        comments ')'
+    WHITE_SPACE

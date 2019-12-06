@@ -62,6 +62,11 @@ Lexer::Lexer(std::string * content) {
 	tagMap.insert(std::pair<std::string, Tag *>(std::string("("), new OpenBracketTag()));
 	tagMap.insert(std::pair<std::string, Tag *>(std::string(")"), new CloseBracketTag()));
 	tagMap.insert(std::pair<std::string, Tag *>(std::string(","), new CommaTag()));
+	tagMap.insert(std::pair<std::string, Tag *>(std::string("parameter"), new ParameterTag()));
+	tagMap.insert(std::pair<std::string, Tag *>(std::string("<parameters>"), new ParametersBeginTag()));
+	tagMap.insert(std::pair<std::string, Tag *>(std::string("</parameters>"), new ParametersEndTag()));
+	tagMap.insert(std::pair<std::string, Tag *>(std::string("var"), new ParameterNameTag()));
+	tagMap.insert(std::pair<std::string, Tag *>(std::string("using"), new UsingTag()));
 }
 
 std::list<Tag*>* Lexer::go() {

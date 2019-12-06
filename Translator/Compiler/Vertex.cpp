@@ -100,3 +100,21 @@ void Vertex::rebindRecv(std::string old, std::string new_name) {
 		}
 	}
 }
+
+void Vertex::emplaceParam(std::string param, std::string value) {
+	StaticHelper::replaceAll(this->name, param, value);
+	EmptyClass * it;
+	for (int i = 0; i < this->body.size(); i++) {
+		it = this->body.get(i);
+		if (it->class_id) {
+			Exchange * ex = (Exchange *)it;
+			StaticHelper::replaceAll(ex->name, param, value);
+			for (Coord &c : ex->exchange_coords) {
+				StaticHelper::replaceAll(c.exchange, param, value);
+				StaticHelper::replaceAll(c.vertex, param, value);
+				StaticHelper::replaceAll(c.edge, param, value);
+				StaticHelper::replaceAll(c.subgraph, param, value);
+			}
+		}
+	}
+}

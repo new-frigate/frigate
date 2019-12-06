@@ -253,12 +253,97 @@ public:
 	}
 };
 
+class parameter : public LexTag {
+public:
+	std::string varName;
+	std::vector<std::string> array;
+	
+	parameter() {
+		this->name = "parameter";
+	}
+	
+	void update(std::list<Tag *> * tags) {
+		std::list<Tag *>::iterator it = tags->begin();
+		bool usedNewcl = false;
+		while (it != tags->end()) {
+			std::vector<Tag *> erased;
+			if (smart(&it, tags, std::vector<std::string> {"ParameterNameTag", "AssignTag", "OpenBracketTag"}, &erased)) {
+				parameter * newcl = new parameter();
+				usedNewcl = false;
+				newcl->varName = ((ParameterNameTag *)erased[0])->value;
+				erased.clear();
+				if (anyof(&it, tags, std::vector<std::string> {"StringTag"}, &erased)) {
+					for (Tag * itTag : erased) {
+						newcl->array.push_back(((StringTag *)itTag)->value);
+					}
+					erased.clear();
+					if (smart(&it, tags, std::vector<std::string> {"CloseBracketTag"}, &erased)) {
+						usedNewcl = true;
+						it = tags->insert(it, newcl);
+					}
+				}
+				if (!usedNewcl) {
+					delete newcl;
+				}
+			}
+			incit(&it, tags);
+		}
+	}
+};
+
+class parameters : public LexTag {
+public:
+	std::vector<parameter *> value;
+	
+	parameters() {
+		this->name = "parameters";
+	}
+	
+	void update(std::list<Tag *> * tags) {
+		std::list<Tag *>::iterator it = tags->begin();
+		while (it != tags->end()) {
+			std::vector<Tag *> erased;
+			if (anyof(&it, tags, std::vector<std::string> {"parameter"}, &erased)) {
+				parameters * newcl = new parameters();
+				for (Tag * itTag : erased) {
+					newcl->value.push_back((parameter *)itTag);
+				}
+				it = tags->insert(it, newcl);
+			}
+			incit(&it, tags);
+		}
+	}
+};
+
+class parameters_clause : public LexTag {
+public:
+	parameters * value;
+	
+	parameters_clause() {
+		this->name = "parameters_clause";
+	}
+	
+	void update(std::list<Tag *> * tags) {
+		std::list<Tag *>::iterator it = tags->begin();
+		while (it != tags->end()) {
+			std::vector<Tag *> erased;
+			if (smart(&it, tags, std::vector<std::string> {"ParametersBeginTag", "parameters", "ParametersEndTag"}, &erased)) {
+				parameters_clause * newcl = new parameters_clause();
+				newcl->value = (parameters *)erased[1];
+				it = tags->insert(it, newcl);
+			}
+			incit(&it, tags);
+		}
+	}
+};
+
 class graph_declarations : public LexTag {
 public:
 	version_clause * _version_clause;
 	header_clause * _header_clause;
 	root_clause * _root_clause;
 	tail_clause * _tail_clause;
+	parameters_clause * _parameters_clause;
 
 
 	graph_declarations() {
@@ -269,12 +354,21 @@ public:
 		std::list<Tag *>::iterator it = tags->begin();
 		while (it != tags->end()) {
 			std::vector<Tag *> erased;
-			if (smart(&it, tags, std::vector<std::string> {"version_clause", "header_clause", "root_clause", "tail_clause"}, &erased)) {
+			if (smart(&it, tags, std::vector<std::string> {"version_clause", "header_clause", "root_clause", "tail_clause", "parameters_clause"}, &erased)) {
 				graph_declarations * newcl = new graph_declarations();
 				newcl->_version_clause = (version_clause *)erased[0];
 				newcl->_header_clause = (header_clause *)erased[1];
 				newcl->_root_clause = (root_clause *)erased[2];
 				newcl->_tail_clause = (tail_clause *)erased[3];
+				newcl->_parameters_clause = (parameters_clause *)erased[4];
+				it = tags->insert(it, newcl);
+			}else if (smart(&it, tags, std::vector<std::string> {"version_clause", "header_clause", "root_clause", "tail_clause"}, &erased)) {
+				graph_declarations * newcl = new graph_declarations();
+				newcl->_version_clause = (version_clause *)erased[0];
+				newcl->_header_clause = (header_clause *)erased[1];
+				newcl->_root_clause = (root_clause *)erased[2];
+				newcl->_tail_clause = (tail_clause *)erased[3];
+				newcl->_parameters_clause = nullptr;
 				it = tags->insert(it, newcl);
 			}
 			incit(&it, tags);
@@ -747,6 +841,62 @@ public:
 	}
 };
 
+class param_body_clause : public LexTag {
+public:
+	std::vector<std::string> value;
+
+	param_body_clause() {
+		this->name = "param_body_clause";
+	}
+
+	void update(std::list<Tag *> * tags) {
+		std::list<Tag *>::iterator it = tags->begin();
+		while (it != tags->end()) {
+			std::vector<Tag *> erased;
+			if (anyof(&it, tags, std::vector<std::string> {"UsingTag"}, &erased)) {
+				param_body_clause * newcl = new param_body_clause();
+				for (Tag * itTag : erased) {
+					for (std::string varName : ((UsingTag *)itTag)->value) {
+						newcl->value.push_back(varName);
+					}
+				}
+				it = tags->insert(it, newcl);
+			}
+			incit(&it, tags);
+		}
+	}
+};
+/*
+class vertex_body_clause : public LexTag {
+public:
+	std::vector<Tag *> value;
+	param_body_clause * using_vars;
+
+	vertex_body_clause() {
+		this->name = "vertex_body_clause";
+	}
+
+	void update(std::list<Tag *> * tags) {
+		std::list<Tag *>::iterator it = tags->begin();
+		while (it != tags->end()) {
+			std::vector<Tag *> erased;
+			if (smart(&it, tags, std::vector<std::string> {"param_body_clause", "vertex_calc_body_clause"}, &erased)) {
+				vertex_body_clause * newcl = new vertex_body_clause();
+				newcl->using_vars = (param_body_clause *)erased[0];
+				newcl->value = ((vertex_calc_body_clause *)erased[1])->value;
+				it = tags->insert(it, newcl);
+			}
+			else if (smart(&it, tags, std::vector<std::string> {"vertex_calc_body_clause"}, &erased)) {
+				vertex_body_clause * newcl = new vertex_body_clause();
+				newcl->value = ((vertex_calc_body_clause *)erased[0])->value;
+				it = tags->insert(it, newcl);
+			}
+			incit(&it, tags);
+		}
+	}
+};
+ * */
+
 class vertex_template : public LexTag {
 public:
 	name_clause * _name_clause;
@@ -876,6 +1026,7 @@ public:
 	name_clause * _name_clause;
 	template_name_clause * _template_name_clause;
 	internal_edge_send_coords * _internal_edge_send_coords;
+	param_body_clause * _param_body_clause;
 
 	control_edge() {
 		this->name = "control_edge";
@@ -885,11 +1036,20 @@ public:
 		std::list<Tag *>::iterator it = tags->begin();
 		while (it != tags->end()) {
 			std::vector<Tag *> erased;
-			if (smart(&it, tags, std::vector<std::string> {"ControlEdgeBeginTag", "name_clause", "template_name_clause", "internal_edge_send_coords", "ControlEdgeEndTag"}, &erased)) {
+			if (smart(&it, tags, std::vector<std::string> {"ControlEdgeBeginTag", "param_body_clause", "name_clause", "template_name_clause", "internal_edge_send_coords", "ControlEdgeEndTag"}, &erased)) {
+				control_edge * newcl = new control_edge();
+				newcl->_param_body_clause = (param_body_clause *)erased[1];
+				newcl->_name_clause = (name_clause *)erased[2];
+				newcl->_template_name_clause = (template_name_clause *)erased[3];
+				newcl->_internal_edge_send_coords = (internal_edge_send_coords *)erased[4];
+				it = tags->insert(it, newcl);
+			}
+			else if (smart(&it, tags, std::vector<std::string> {"ControlEdgeBeginTag", "name_clause", "template_name_clause", "internal_edge_send_coords", "ControlEdgeEndTag"}, &erased)) {
 				control_edge * newcl = new control_edge();
 				newcl->_name_clause = (name_clause *)erased[1];
 				newcl->_template_name_clause = (template_name_clause *)erased[2];
 				newcl->_internal_edge_send_coords = (internal_edge_send_coords *)erased[3];
+				newcl->_param_body_clause = nullptr;
 				it = tags->insert(it, newcl);
 			}
 			incit(&it, tags);
@@ -903,6 +1063,7 @@ public:
 	template_name_clause * _template_name_clause;
 	internal_edge_send_coords * _internal_edge_send_coords;
 	internal_edge_recv_coords * _internal_edge_recv_coords;
+	param_body_clause * _param_body_clause;
 
 	internal_edge() {
 		this->name = "internal_edge";
@@ -912,12 +1073,22 @@ public:
 		std::list<Tag *>::iterator it = tags->begin();
 		while (it != tags->end()) {
 			std::vector<Tag *> erased;
-			if (smart(&it, tags, std::vector<std::string> {"InternalEdgeBeginTag", "name_clause", "template_name_clause", "internal_edge_send_coords", "internal_edge_recv_coords", "InternalEdgeEndTag"}, &erased)) {
+			if (smart(&it, tags, std::vector<std::string> {"InternalEdgeBeginTag", "param_body_clause", "name_clause", "template_name_clause", "internal_edge_send_coords", "internal_edge_recv_coords", "InternalEdgeEndTag"}, &erased)) {
+				internal_edge * newcl = new internal_edge();
+				newcl->_param_body_clause = (param_body_clause *)erased[1];
+				newcl->_name_clause = (name_clause *)erased[2];
+				newcl->_template_name_clause = (template_name_clause *)erased[3];
+				newcl->_internal_edge_send_coords = (internal_edge_send_coords *)erased[4];
+				newcl->_internal_edge_recv_coords = (internal_edge_recv_coords *)erased[5];
+				it = tags->insert(it, newcl);
+			}
+			else if (smart(&it, tags, std::vector<std::string> {"InternalEdgeBeginTag", "name_clause", "template_name_clause", "internal_edge_send_coords", "internal_edge_recv_coords", "InternalEdgeEndTag"}, &erased)) {
 				internal_edge * newcl = new internal_edge();
 				newcl->_name_clause = (name_clause *)erased[1];
 				newcl->_template_name_clause = (template_name_clause *)erased[2];
 				newcl->_internal_edge_send_coords = (internal_edge_send_coords *)erased[3];
 				newcl->_internal_edge_recv_coords = (internal_edge_recv_coords *)erased[4];
+				newcl->_param_body_clause = nullptr;
 				it = tags->insert(it, newcl);
 			}
 			incit(&it, tags);
@@ -931,6 +1102,7 @@ public:
 	template_name_clause * _template_name_clause;
 	external_edge_send_coords * _external_edge_send_coords;
 	external_edge_recv_coords * _external_edge_recv_coords;
+	param_body_clause * _param_body_clause;
 
 	external_edge() {
 		this->name = "external_edge";
@@ -940,12 +1112,22 @@ public:
 		std::list<Tag *>::iterator it = tags->begin();
 		while (it != tags->end()) {
 			std::vector<Tag *> erased;
-			if (smart(&it, tags, std::vector<std::string> {"ExternalEdgeBeginTag", "name_clause", "template_name_clause", "external_edge_send_coords", "external_edge_recv_coords", "ExternalEdgeEndTag"}, &erased)) {
+			if (smart(&it, tags, std::vector<std::string> {"ExternalEdgeBeginTag", "param_body_clause", "name_clause", "template_name_clause", "external_edge_send_coords", "external_edge_recv_coords", "ExternalEdgeEndTag"}, &erased)) {
+				external_edge * newcl = new external_edge();
+				newcl->_param_body_clause = (param_body_clause *)erased[1];
+				newcl->_name_clause = (name_clause *)erased[2];
+				newcl->_template_name_clause = (template_name_clause *)erased[3];
+				newcl->_external_edge_send_coords = (external_edge_send_coords *)erased[4];
+				newcl->_external_edge_recv_coords = (external_edge_recv_coords *)erased[5];
+				it = tags->insert(it, newcl);
+			}
+			else if (smart(&it, tags, std::vector<std::string> {"ExternalEdgeBeginTag", "name_clause", "template_name_clause", "external_edge_send_coords", "external_edge_recv_coords", "ExternalEdgeEndTag"}, &erased)) {
 				external_edge * newcl = new external_edge();
 				newcl->_name_clause = (name_clause *)erased[1];
 				newcl->_template_name_clause = (template_name_clause *)erased[2];
 				newcl->_external_edge_send_coords = (external_edge_send_coords *)erased[3];
 				newcl->_external_edge_recv_coords = (external_edge_recv_coords *)erased[4];
+				newcl->_param_body_clause = nullptr;
 				it = tags->insert(it, newcl);
 			}
 			incit(&it, tags);
@@ -957,6 +1139,7 @@ class vertex : public LexTag {
 public:
 	name_clause * _name_clause;
 	Tag * value;
+	param_body_clause * _param_body_clause;
 
 	vertex() {
 		this->name = "vertex";
@@ -966,15 +1149,29 @@ public:
 		std::list<Tag *>::iterator it = tags->begin();
 		while (it != tags->end()) {
 			std::vector<Tag *> erased;
-			if (smart(&it, tags, std::vector<std::string> {"VertexBeginTag", "name_clause", "template_name_clause", "VertexEndTag"}, &erased)) {
+			if (smart(&it, tags, std::vector<std::string> {"VertexBeginTag", "param_body_clause", "name_clause", "template_name_clause", "VertexEndTag"}, &erased)) {
+				vertex * newcl = new vertex();
+				newcl->_param_body_clause = (param_body_clause *)erased[1];
+				newcl->_name_clause = (name_clause *)erased[2];
+				newcl->value = erased[3];
+				it = tags->insert(it, newcl);
+			} else if (smart(&it, tags, std::vector<std::string> {"VertexBeginTag", "param_body_clause", "name_clause", "vertex_body_clause", "VertexEndTag"}, &erased)) {
+				vertex * newcl = new vertex();
+				newcl->_param_body_clause = (param_body_clause *)erased[1];
+				newcl->_name_clause = (name_clause *)erased[2];
+				newcl->value = erased[3];
+				it = tags->insert(it, newcl);
+			} else if (smart(&it, tags, std::vector<std::string> {"VertexBeginTag", "name_clause", "template_name_clause", "VertexEndTag"}, &erased)) {
 				vertex * newcl = new vertex();
 				newcl->_name_clause = (name_clause *)erased[1];
 				newcl->value = erased[2];
+				newcl->_param_body_clause = nullptr;
 				it = tags->insert(it, newcl);
 			} else if (smart(&it, tags, std::vector<std::string> {"VertexBeginTag", "name_clause", "vertex_body_clause", "VertexEndTag"}, &erased)) {
 				vertex * newcl = new vertex();
 				newcl->_name_clause = (name_clause *)erased[1];
 				newcl->value = erased[2];
+				newcl->_param_body_clause = nullptr;
 				it = tags->insert(it, newcl);
 			}
 			incit(&it, tags);

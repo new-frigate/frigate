@@ -1,0 +1,29 @@
+// Parsing... OK
+// Validation... OK
+digraph 1 {
+  v_0 [label="Coordinator"];
+  v_1 [label="sub_1_vert_1"];
+  v_2 [label="sub_1_vert_2"];
+  v_3 [label="sub_1_vert_3"];
+  subgraph cluster_0 {
+    style=filled;
+    color=lightgrey;
+    label="sub_1";
+    node [style=filled,color=white];
+    v_1 -> v_2[label="int_1"];
+    v_1 -> v_3[label="int_2"];
+  }
+  v_3 -> v_0 [style=dotted, label="cont_1"];
+  v_4 [label="sub_2_vert_1"];
+  v_5 [label="sub_2_vert_2"];
+  v_6 [label="sub_2_vert_3"];
+  subgraph cluster_1 {
+    style=filled;
+    color=lightgrey;
+    label="sub_2";
+    node [style=filled,color=white];
+    v_4 -> v_5[label="int_1"];
+    v_4 -> v_6[label="int_2"];
+  }
+  v_2 -> v_5 [style=dotted, label="ext_1"];
+}

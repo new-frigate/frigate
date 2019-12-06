@@ -1,0 +1,106 @@
+# test_3 
+# Answer: OK
+# Description: test with several vertex templates. Testing auto name generation for
+# vertices made with vertex templates
+
+<graph>
+
+	version = 1.0
+
+	<header>
+		@
+			some code here
+		@
+	</header>
+
+	<root>
+		root = "root"
+	</root>
+
+	<tail>
+		@
+			some code here
+		@
+	</tail>
+
+	<parameters>
+		var i = ("1" "2" "3" "4")
+		var j = ("0" "1" "2" "0")
+		var k = ("1" "2" "3" "3")
+		var m = ("1" "2")
+		var l = ("2" "3")
+	</parameters>
+	
+	main_subgraph = "sub_1"
+
+	<subgraph>
+		name = "sub_1"
+		condition = @ some code here @
+
+		<vertex>
+			name = "vert_0"
+			<exchange>
+				name = "ex_1"
+				send = "edge_1"
+				send = "edge_4"
+			</exchange>
+		</vertex>
+		<vertex>
+			name = "vert_3"
+			<exchange>
+				name = "ex_1"
+				recv = "edge_3"
+				recv = "edge_4"
+			</exchange>
+		</vertex>
+		<vertex>
+			using m, l;
+			name = "vert_%m%"
+			template = "temp_1"
+		</vertex>
+
+		<internal_edge>
+			using i, j, k;
+			name = "edge_%i%"
+			template = "edge_template"
+			send = ("vert_%j%", "ex_1")
+			recv = ("vert_%k%", "ex_1")
+		</internal_edge>
+	</subgraph>
+
+	<edge_template>
+	    name="edge_template"
+		 <send>   
+		    <fragment>
+		        variable = @ some code here @
+		        type     = @ some code here @
+		        left     = @ some code here @
+		        right    = @ some code here @
+		    </fragment>
+		 </send>
+	
+		 <recv>
+		    <fragment>
+		        variable = @ some code here @
+		        type     = @ some code here @
+		        left     = @ some code here @
+		        right    = @ some code here @
+		    </fragment>
+		 </recv>
+	</edge_template>
+
+	<vertex_template>
+		name = "temp_1"
+		<code>
+			@...@
+		</code>
+
+		<exchange>
+			name = "ex_1"
+			send = "edge_%l%"
+			recv = "edge_%m%"
+		</exchange>
+	</vertex_template>
+
+</graph>
+

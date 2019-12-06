@@ -25,6 +25,8 @@ public:
 	
 	void validate();
 	
+	void cyclic();
+	
 	void prettyPrint();
 };
 

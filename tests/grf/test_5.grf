@@ -1,6 +1,6 @@
 # test_5 
-# Answer: InternalEdge <int_1> in Subgraph <sub_2> duplicates ExternalEdge 
-# Description: internal edge and external edge have same names
+# Answer: NAME DUPLICATION ERR
+# Description: InternalEdge <int_1> in Subgraph <sub_2> duplicates ExternalEdge
 
 <graph>
 

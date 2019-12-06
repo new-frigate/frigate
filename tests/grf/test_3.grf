@@ -22,6 +22,11 @@
 			some code here
 		@
 	</tail>
+
+	<parameters>
+		var i = ("1" "2")
+		var j = ("2" "3")
+	</parameters>
 	
 	main_subgraph = "sub_1"
 
@@ -41,39 +46,56 @@
 			
 			<exchange>	
 				name = "ex_1"
-				send = "cont_1"
-				
+				send = "int_1"
+				send = "int_2"
 			</exchange>
 		</vertex>
 
 		<vertex>
 			name = "sub_1_vert_2"
-			template = "vert_temp_1"
+			<code>
+				@
+					smdks
+				@
+			</code>
+
+			<exchange>
+				name = "ex_1"
+				recv = "int_1"
+				send = "ext_1"
+			</exchange>
 		</vertex>
 
 		<vertex>
 			name = "sub_1_vert_3"
-			template = "vert_temp_1"
-		</vertex>
+			
+			<code>
+				@
+					dwd
+				@
+			</code>
 
-		<vertex>
-			name = "sub_1_vert_4"
-			template = "vert_temp_1"
+			<exchange>
+				name = "ex_1"
+				recv = "int_2"
+				send = "cont_1"
+			</exchange>
 		</vertex>
 
 		<control_edge>
 			name = "cont_1"
 			template = "edge_template_1"
-			send = ("sub_1_vert_1", "ex_1")	
+			send = ("sub_1_vert_3", "ex_1")	
 		</control_edge>
 
 		<internal_edge>
-			name = "int_1"
+			using i, j;
+			name = "int_%i%"
 			template = "edge_template"
-			send= ("vert_temp_1", "ex_1")
-			recv = ("sub_1_vert_1", "ex_1")
+			send= ("sub_1_vert_1", "ex_1")
+			recv = ("sub_1_vert_%j%", "ex_1")
 		</internal_edge>
-
+		
 	</subgraph>
 
 	<subgraph>
@@ -82,43 +104,59 @@
 
 		<vertex>
 			name = "sub_2_vert_1"
-			template = "vert_temp_1"
+
+			<code>
+				@
+					kd
+				@
+			</code>
+
+			<exchange>
+				name = "ex_1"
+				send = "int_1"
+				send = "int_2"
+			</exchange>
+					
 		</vertex>
 
 		<vertex>
 			name = "sub_2_vert_2"
-			template = "vert_temp_2"
+
+			<code>
+				@
+					sfe
+				@
+			</code>
+	
+			<exchange>
+				name = "ex_1"
+				recv = "int_1"
+				recv = "ext_1"
+			</exchange>
 		</vertex>
 
 		<vertex>
 			name = "sub_2_vert_3"
-			template = "vert_temp_2"
-		</vertex>
 
-		<vertex>
-			name = "sub_2_vert_4"
-			
+			<code>
+				@
+					jnfkn
+				@
+			</code>
+	
 			<exchange>
 				name = "ex_1"
-				recv = "int_1"
 				recv = "int_2"
 			</exchange>
 		</vertex>
 
 		<internal_edge>
-			name = "int_1"
+			using i, j;
+			name = "int_%i%"
 			template = "edge_template"
-			send= ("vert_temp_1", "ex_1")
-			recv = ("sub_2_vert_4", "ex_1")
+			send= ("sub_2_vert_1", "ex_1")
+			recv = ("sub_2_vert_%j%", "ex_1")
 		</internal_edge>
-
-		<internal_edge>
-			name = "int_2"
-			template = "edge_template"
-			send= ("vert_temp_2", "ex_1")
-			recv = ("sub_2_vert_4", "ex_1")
-		</internal_edge>
-
 
 
 	</subgraph>
@@ -147,36 +185,8 @@
 	<external_edge>
 		name = "ext_1"
 		template = "edge_template"
-		send = ("sub_1", "vert_temp_1", "ex_1")
-		recv = ("sub_2", "vert_temp_2", "ex_1")
+		send = ("sub_1", "sub_1_vert_2", "ex_1")
+		recv = ("sub_2", "sub_2_vert_2", "ex_1")
 	</external_edge>
-
-	<vertex_template>
-		name = "vert_temp_1"
-	
-		<exchange>
-			name = "ex_1"
-			send = "int_1"
-			send = "ext_1"
-		</exchange>
-	</vertex_template>
-
-	<vertex_template>
-		name = "vert_temp_2"
-
-		<code>
-			@
-				some code here
-			@
-		</code>
-
-		<exchange>
-			name = "ex_1"
-			
-			send = "int_2"
-			recv = "ext_1"
-		</exchange>
-	</vertex_template>
-
 </graph>
 

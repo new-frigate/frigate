@@ -5,10 +5,8 @@
 #include <string>
 
 #include "Parser/HexParser.h"
-//#include "Compiler/Compiler.h"
 #include "Exceptions/Excepion.h"
 #include "Compiler/Graph.h"
-//#include "Compiler/Graph.h"
 
 #include "Compiler/crossvector.h"
 #include "Compiler/Coords.h"
@@ -20,9 +18,6 @@ int main(int argc, char **argv) {
     std::srand(time(NULL));
 	
     std::string name_of_file = "";
-/*    for (int i = 0; i < argc; i++)
-        std::cout << argv[i] << std::endl;
-    std::cout << argc << std::endl; */
     if (argc == 3 && std::string(argv[1]) == "-f")
         name_of_file = argv[2];
     else
@@ -30,9 +25,8 @@ int main(int argc, char **argv) {
 	
     StaticHelper::location_prefix = name_of_file.substr(0, name_of_file.find_last_of("/") + 1);
     
-    std::cout << name_of_file << std::endl;
     graph *lex_graph;
-    std::cout << "Parsing... ";
+    std::cout << "// Parsing... ";
     try {
         lex_graph = parse(name_of_file);	
     }
@@ -51,11 +45,11 @@ int main(int argc, char **argv) {
 	
     Graph endGraph;
 	
-    std::cout << "Validation... ";
+    std::cout << "// Validation... ";
     try {
             endGraph.readTag(lex_graph);
-            //std::cout << StaticHelper::autoNamePref << std::endl;
             endGraph.validate();
+			endGraph.cyclic();
     }
     catch (Exception e) {
             std::cout << "\n" << e.name << std::endl;
@@ -64,30 +58,6 @@ int main(int argc, char **argv) {
     }
     std::cout << "OK" << std::endl;
     endGraph.prettyPrint();
-    
-    /*
-    Graph *main_graph = new Graph();
-    try {
-        main_graph->load_from_tag(lex_graph);
-    }
-    catch (Exception ex) {
-        std::cout << ex.name << std::endl;
-        std::cout << ex.msg << std::endl;
-        return -1;
-    }
-	 */
-//    main_graph->name_base.print_db();
-    
-    /*Compiler comp(main_graph);
-    try {
-        std::cout << "Compiling..." << std::endl;
-        comp.names_check();
-        std::cout << "OK" << std::endl;
-    }
-    catch (Exception ex) {
-        std::cout << ex.name << std::endl;
-        std::cout << ex.msg << std::endl;
-    }
-	 */
+
     return 0;
 }

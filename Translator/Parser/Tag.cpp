@@ -367,3 +367,83 @@ Tag * CommaTag::makeInst()
 {
 	return new CommaTag();
 }
+
+Tag * ParameterTag::makeInst()
+{
+	return new ParameterTag();
+}
+
+Tag * ParametersBeginTag::makeInst()
+{
+	return new ParametersBeginTag();
+}
+
+Tag * ParametersEndTag::makeInst()
+{
+	return new ParametersEndTag();
+}
+
+Tag * ParameterNameTag::makeInst()
+{
+	return new ParameterNameTag();
+}
+
+bool ParameterNameTag::falarm(int cur, std::string* content) {
+	if (cur + 1 < content->size() && cur - 3 >= 0) {
+		if (std::isspace(content->at(cur + 1)) && std::isspace(content->at(cur - 3))) {
+			return false;
+		}
+	}
+	return true;
+}
+
+int ParameterNameTag::doIterate(int cur, std::string* content) {
+	cur++;
+	this->value = "";
+	while (cur < content->size() && std::isspace(content->at(cur))) {
+		cur++;
+	}
+	while (cur < content->size() && std::isalpha(content->at(cur))) {
+		this->value += content->at(cur);
+		cur++;
+	}
+	return cur;
+}
+
+Tag * UsingTag::makeInst() {
+	return new UsingTag();
+}
+
+bool UsingTag::falarm(int cur, std::string* content) {
+	if (cur + 1 < content->size()) {
+		if(std::isspace(content->at(cur + 1))) {
+			return false;
+		}
+	}
+	return true;
+}
+
+int UsingTag::doIterate(int cur, std::string* content) {
+	cur++;
+	std::string word = "";
+	while(cur + 1 < content->size()) {
+		if (std::isalpha(content->at(cur))) {
+			word += content->at(cur);
+			cur++;
+		}
+		else {
+			if (word.size() > 0) {
+				this->value.push_back(word);
+				word = "";
+			}
+			while (cur + 1 < content->size() && !std::isalpha(content->at(cur))) {
+
+				if (content->at(cur) == ';') {
+					return cur + 1;
+				}
+				cur++;
+			}
+		}
+	}
+	return cur;
+}

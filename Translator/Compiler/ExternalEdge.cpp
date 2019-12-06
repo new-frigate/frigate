@@ -49,3 +49,17 @@ void ExternalEdge::readTag(graph* graph, external_edge* external_edge) {
 		}
 	}
 }
+
+void ExternalEdge::emplaceParam(std::string param, std::string value) {
+	StaticHelper::replaceAll(this->name, param, value);
+	
+	StaticHelper::replaceAll(this->send_coord.exchange, param, value);
+	StaticHelper::replaceAll(this->send_coord.vertex, param, value);
+	StaticHelper::replaceAll(this->send_coord.edge, param, value);
+	StaticHelper::replaceAll(this->send_coord.subgraph, param, value);
+	
+	StaticHelper::replaceAll(this->recv_coord.exchange, param, value);
+	StaticHelper::replaceAll(this->recv_coord.vertex, param, value);
+	StaticHelper::replaceAll(this->recv_coord.edge, param, value);
+	StaticHelper::replaceAll(this->recv_coord.subgraph, param, value);
+}

@@ -30,6 +30,16 @@ void Graph::readTag(graph* graph) {
 		this->tail = ((CodeClauseTag *)tmp)->value;
 	}
 	
+	tmp = graph->_graph_declarations->_parameters_clause;
+	if (tmp != nullptr) {
+		parameters * params = ((parameters_clause *)tmp)->value;
+		for (parameter * itParam : params->value) {
+			if (!StaticHelper::registerParam(itParam->varName, itParam->array)) {
+				throw Exception(ExceptionType::NAME_DUPLICATION, "Parameter <" + itParam->varName + "> name duplicated");
+			}
+		}
+	}
+	
 	//FIND ALL VERTEX TEMPLATES NAMES
 	for (Tag * it : graph->_graph_entry->value) {
 		if (graph->actname(it) == "vertex_template") {
@@ -42,46 +52,40 @@ void Graph::readTag(graph* graph) {
 	for (Tag * it : graph->_graph_entry->value) {
 		if (graph->actname(it) == "subgraph") {
 			Subgraph tmpSubgraph;
-			try {
-				tmpSubgraph.readTag(graph, (subgraph *)it);
-			}
-			catch (Exception e) {
-				throw e;
-			}
+			tmpSubgraph.readTag(graph, (subgraph *)it);
 			this->subgraphs.push_back(tmpSubgraph);
 			if (tmpSubgraph.name == graph->_main_subgraph->value) {
 				this->main_subgraph = this->subgraphs.size() - 1;
 			}
 		}
 		if (graph->actname(it) == "external_edge") {
-			std::string send_v = ((external_edge *)it)->_external_edge_send_coords->vertex;
-			std::string recv_v = ((external_edge *)it)->_external_edge_recv_coords->vertex;
-			bool is_template_send = StaticHelper::vertex_templates.find(send_v) != StaticHelper::vertex_templates.end();
-			bool is_template_recv = StaticHelper::vertex_templates.find(recv_v) != StaticHelper::vertex_templates.end();
-			if (is_template_send || is_template_recv) {
-				for (Subgraph &send_subgraph : this->subgraphs)
-					for (Vertex &sendVert : send_subgraph.verticies) {
-						if ((is_template_send ? sendVert.template_name : sendVert.name) == send_v) {
-							for (Subgraph &recv_subgraph : this->subgraphs) {
-								for (Vertex &recvVert : recv_subgraph.verticies) {
-									if ((is_template_recv ? recvVert.template_name : recvVert.name) == recv_v) {
-										ExternalEdge tmpEE;
-										tmpEE.readTag(graph, (external_edge *)it);
-										tmpEE.send_coord.vertex = sendVert.name;
-										tmpEE.send_coord.subgraph = send_subgraph.name;
-										tmpEE.recv_coord.vertex = recvVert.name;
-										tmpEE.recv_coord.subgraph = recv_subgraph.name;
-										sendVert.rebindSend(tmpEE.name, StaticHelper::autoName() + "." + tmpEE.name);
-										recvVert.rebindRecv(tmpEE.name, StaticHelper::autoName() + "." + tmpEE.name);
-
-										tmpEE.name = StaticHelper::autoName() + "." + tmpEE.name;
-										this->external_edges.push_back(tmpEE);
-										StaticHelper::genNamePref();
-									}
-								}
+			param_body_clause * itParams = ((external_edge *)it)->_param_body_clause;
+			if (itParams != nullptr) {
+				int len = -1;
+				for (std::string param : itParams->value) {
+					if (StaticHelper::parameters.find(param) != StaticHelper::parameters.end()) {
+						if (len < 0) {
+							len = StaticHelper::parameters.at(param).size();
+						}
+						else {
+							if (StaticHelper::parameters.at(param).size() != len) {
+								throw Exception("PARAMETER SIZE ERR", "Parameter <" + param + "> at ExternalEdge <" + ((external_edge *)it)->_name_clause->value + "> has different size");
 							}
 						}
 					}
+					else {
+						throw Exception(ExceptionType::NAME_NOT_FOUND, "Parameter <" + param + "> at ExternalEdge <" + ((external_edge *)it)->_name_clause->value + "> not found");
+					}
+				}
+
+				for (int paramInd = 0; paramInd < len; paramInd++) {
+					ExternalEdge tmpEE;
+					tmpEE.readTag(graph, (external_edge *)it);
+					for (std::string paramName : itParams->value) {
+						tmpEE.emplaceParam("%" + paramName + "%", StaticHelper::parameters.at(paramName)[paramInd]);
+					}
+					this->external_edges.push_back(tmpEE);
+				}
 			}
 			else {	//NORMAL EDGE
 				ExternalEdge tmpExternalEdge;
@@ -180,9 +184,14 @@ void Graph::validate() {
 			throw Exception(ExceptionType::VERTEX_NOT_FOUND, "Vertex <" + it_EE.recv_coord.vertex + "> in subgraph <" + it_EE.recv_coord.subgraph + "> for RECV at external edge <" + it_EE.name + "> not found");
 		}
 	}
-	
-	
 }
+
+void Graph::cyclic() {
+	for (Subgraph &it_subgraph : this->subgraphs) {
+		it_subgraph.cyclic();
+	}
+}
+
 
 void Graph::findGoodPref(graph* graph) {
 	for (Tag * it : graph->_graph_entry->value) {
@@ -216,33 +225,52 @@ void Graph::findGoodPref(graph* graph) {
 }
 
 void Graph::prettyPrint() {
-	std::cout << "Graph " << this->version << std::endl;
-	for (Subgraph it_subgraph : this->subgraphs) {
-		std::cout << "		Subgraph " << it_subgraph.name << "  " << it_subgraph.verticies.size() << std::endl;
-		for (Vertex it_vertex : it_subgraph.verticies) {
-			std::cout << "			Vertex " << it_vertex.name << std::endl;
-			for (int i = 0; i < it_vertex.body.size(); i++) {
-				if (it_vertex.body.get(i)->class_id) {
-					Exchange * it_exchange = (Exchange *)it_vertex.body.get(i);
-					for (Coord it_coord : it_exchange->exchange_coords) {
-						std::cout << "				Coord " << it_coord.is_send << " <" << it_coord.edge << ">" << std::endl;
-					}
-				}
-			}
-		}
-		for (InternalEdge it_IE : it_subgraph.internal_edges) {
-			std::cout << "			IE " << it_IE.name << std::endl;
-			std::cout << "				Send " << it_IE.send_coord.vertex << "   " << it_IE.send_coord.exchange << std::endl;
-			std::cout << "				Recv " << it_IE.recv_coord.vertex << "   " << it_IE.recv_coord.exchange << std::endl;
-		}
-		for (ControlEdge it_CE : it_subgraph.control_edges) {
-			std::cout << "			CE " << it_CE.name << std::endl;
-			std::cout << "				Send " << it_CE.send_coord.vertex << "   " << it_CE.send_coord.exchange << std::endl;
-		}
-	}
-	for (ExternalEdge it_EE : this->external_edges) {
-		std::cout << "		EE " << it_EE.name << std::endl;
-		std::cout << "			Send " << it_EE.send_coord.subgraph << "   " << it_EE.send_coord.vertex << "   " << it_EE.send_coord.exchange << std::endl;
-		std::cout << "			Recv " << it_EE.recv_coord.subgraph << "   " << it_EE.recv_coord.vertex << "   " << it_EE.recv_coord.exchange << std::endl;
-	}
+    std::cout << "digraph " << this->version << " {" << std::endl;
+    std::map<std::string, std::map<std::string, std::string> *> *sub_map = new std::map<std::string, std::map<std::string, std::string> *>();
+    int ctr = 1;
+    int sub_ctr = 0;
+    std::cout << "  " << "v_0 [label=\"Coordinator\"];" << std::endl;
+    for (Subgraph it_subgraph : this->subgraphs) {
+        std::vector<std::string> *name_vec = new std::vector<std::string>();
+        std::map<std::string, std::string> *name_map = new std::map<std::string, std::string>();
+        (*sub_map)[it_subgraph.name] = name_map;
+        for (Vertex it_vertex : it_subgraph.verticies) {
+            std::string v_name = "v_"+ std::to_string(ctr);
+            (*name_map)[it_vertex.name] = v_name;
+            std::cout << "  " << v_name << " [label=\"" << it_vertex.name << "\"];" << std::endl;
+            ctr++;
+            name_vec->push_back(it_vertex.name);
+        }
+        std::cout << "  subgraph cluster_" << sub_ctr++ << " {" << std::endl;
+        std::cout << "    style=filled;" << std::endl;
+        std::cout << "    color=lightgrey;" << std::endl;
+        std::cout << "    label=\"" << it_subgraph.name << "\";" << std::endl;
+        std::cout << "    node [style=filled,color=white];" << std::endl;
+        for (InternalEdge it_IE : it_subgraph.internal_edges) {
+            std::cout << "    " << (*name_map)[it_IE.send_coord.vertex] << " -> " << (*name_map)[it_IE.recv_coord.vertex] << 
+                    "[label=\"" << it_IE.name << "\"];" << std::endl;
+            for (std::vector<std::string>::iterator it = name_vec->begin(); it != name_vec->end(); ++it) {
+                if (*it == it_IE.recv_coord.vertex) {
+                    name_vec->erase(it);
+                    break;
+                }
+            }
+        }
+        std::cout << "  }" << std::endl;
+//        std::cout << "  v_0 -> " << name_map->at(name_vec->at(0)) << std::endl;
+        for (ControlEdge it_CE : it_subgraph.control_edges) 
+            std::cout << "  " << (*name_map)[it_CE.send_coord.vertex] << " -> " << "v_0 [style=dotted, label=\"" << 
+                    it_CE.name << "\"];" << std::endl; 
+        
+            delete name_vec;
+    }
+    
+    for (ExternalEdge it_EE : this->external_edges) {
+        std::map<std::string, std::string> *send_map = sub_map->at(it_EE.send_coord.subgraph);
+        std::map<std::string, std::string> *recv_map = sub_map->at(it_EE.recv_coord.subgraph);
+        std::cout << "  " << (*send_map)[it_EE.send_coord.vertex] << " -> " << (*recv_map)[it_EE.recv_coord.vertex] << 
+                " [style=dotted, label=\"" << it_EE.name << "\"];" << std::endl;
+    }
+        
+    std::cout << "}" << std::endl;
 }

@@ -19,6 +19,7 @@ public:
 	void readTag(graph * graph, vertex * vertex);
 	void rebindSend(std::string old, std::string new_name);
 	void rebindRecv(std::string old, std::string new_name);
+	void emplaceParam(std::string param, std::string value);
 };
 
 #endif /* VERTEX_H */

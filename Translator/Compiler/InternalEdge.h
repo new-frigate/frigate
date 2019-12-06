@@ -19,6 +19,7 @@ public:
 	InternalEdge * addRecvFragment(Fragment recv);
 	
 	void readTag(graph * graph, internal_edge * internal_edge);
+	void emplaceParam(std::string param, std::string value);
 };
 
 #endif /* INTERNALEDGE_H */

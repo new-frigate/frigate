@@ -35,34 +35,67 @@ void Subgraph::readTag(graph* graph, subgraph* subgraph) {
 	
 	for (Tag * it : subgraph->_subgraph_entry->value) {
 		if (graph->actname(it) == "vertex") {
-			Vertex tmpVertex;
-			tmpVertex.readTag(graph, (vertex *)it);
-			this->verticies.push_back(tmpVertex);
-		}
-		if (graph->actname(it) == "internal_edge") {
-			std::string send_v = ((internal_edge *)it)->_internal_edge_send_coords->vertex;
-			std::string recv_v = ((internal_edge *)it)->_internal_edge_recv_coords->vertex;
-			bool is_template_send = StaticHelper::vertex_templates.find(send_v) != StaticHelper::vertex_templates.end();
-			bool is_template_recv = StaticHelper::vertex_templates.find(recv_v) != StaticHelper::vertex_templates.end();
-			
-			if (is_template_send || is_template_recv) {
-				for (Vertex &sendVert : this->verticies) {
-					if ((is_template_send ? sendVert.template_name : sendVert.name) == send_v) {
-						for (Vertex &recvVert : this->verticies) {
-							if ((is_template_recv ? recvVert.template_name : recvVert.name) == recv_v) {
-								InternalEdge tmpIE;
-								tmpIE.readTag(graph, (internal_edge *)it);
-								tmpIE.send_coord.vertex = sendVert.name;
-								tmpIE.recv_coord.vertex = recvVert.name;
-								sendVert.rebindSend(tmpIE.name, StaticHelper::autoName() + "." + tmpIE.name);
-								recvVert.rebindRecv(tmpIE.name, StaticHelper::autoName() + "." + tmpIE.name);
-
-								tmpIE.name = StaticHelper::autoName() + "." + tmpIE.name;
-								this->internal_edges.push_back(tmpIE);
-								StaticHelper::genNamePref();
+			param_body_clause * itParams = ((vertex *)it)->_param_body_clause;
+			if (itParams != nullptr) {
+				int len = -1;
+				for (std::string param : itParams->value) {
+					if (StaticHelper::parameters.find(param) != StaticHelper::parameters.end()) {
+						if (len < 0) {
+							len = StaticHelper::parameters.at(param).size();
+						}
+						else {
+							if (StaticHelper::parameters.at(param).size() != len) {
+								throw Exception("PARAMETER SIZE ERR", "Parameter <" + param + "> at Vertex <" + ((vertex *)it)->_name_clause->value + "> has different size");
 							}
 						}
 					}
+					else {
+						throw Exception(ExceptionType::NAME_NOT_FOUND, "Parameter <" + param + "> at Vertex <" + ((vertex *)it)->_name_clause->value + "> not found");
+					}
+				}
+				
+				for (int paramInd = 0; paramInd < len; paramInd++) {
+					Vertex tmpVertex;
+					tmpVertex.readTag(graph, (vertex *)it);
+					for (std::string paramName : itParams->value) {
+						tmpVertex.emplaceParam("%" + paramName + "%", StaticHelper::parameters.at(paramName)[paramInd]);
+					}
+					this->verticies.push_back(tmpVertex);
+				}
+			}
+			else {
+				Vertex tmpVertex;
+				tmpVertex.readTag(graph, (vertex *)it);
+				this->verticies.push_back(tmpVertex);
+			}
+		}
+		if (graph->actname(it) == "internal_edge") {
+			param_body_clause * itParams = ((internal_edge *)it)->_param_body_clause;
+			if (itParams != nullptr) {
+				int len = -1;
+				for (std::string param : itParams->value) {
+					if (StaticHelper::parameters.find(param) != StaticHelper::parameters.end()) {
+						if (len < 0) {
+							len = StaticHelper::parameters.at(param).size();
+						}
+						else {
+							if (StaticHelper::parameters.at(param).size() != len) {
+								throw Exception("PARAMETER SIZE ERR", "Parameter <" + param + "> at InternalEdge <" + ((internal_edge *)it)->_name_clause->value + "> has different size");
+							}
+						}
+					}
+					else {
+						throw Exception(ExceptionType::NAME_NOT_FOUND, "Parameter <" + param + "> at InternalEdge <" + ((internal_edge *)it)->_name_clause->value + "> not found");
+					}
+				}
+
+				for (int paramInd = 0; paramInd < len; paramInd++) {
+					InternalEdge tmpIE;
+					tmpIE.readTag(graph, (internal_edge *)it);
+					for (std::string paramName : itParams->value) {
+						tmpIE.emplaceParam("%" + paramName + "%", StaticHelper::parameters.at(paramName)[paramInd]);
+					}
+					this->internal_edges.push_back(tmpIE);
 				}
 			}
 			else {	//NORMAL EDGE
@@ -72,20 +105,33 @@ void Subgraph::readTag(graph* graph, subgraph* subgraph) {
 			}
 		}
 		if (graph->actname(it) == "control_edge") {
-			std::string send_v = ((control_edge *)it)->_internal_edge_send_coords->vertex;
-			if (StaticHelper::vertex_templates.find(send_v) != StaticHelper::vertex_templates.end()) {
-					for (Vertex &sendVert : this->verticies) {
-						if (sendVert.template_name == send_v) {
-							ControlEdge tmpCE;
-							tmpCE.readTag(graph, (control_edge *)it);
-							tmpCE.send_coord.vertex = sendVert.name;
-							sendVert.rebindSend(tmpCE.name, StaticHelper::autoName() + "." + tmpCE.name);
-
-							tmpCE.name = StaticHelper::autoName() + "." + tmpCE.name;
-							this->control_edges.push_back(tmpCE);
-							StaticHelper::genNamePref();
+			param_body_clause * itParams = ((control_edge *)it)->_param_body_clause;
+			if (itParams != nullptr) {
+				int len = -1;
+				for (std::string param : itParams->value) {
+					if (StaticHelper::parameters.find(param) != StaticHelper::parameters.end()) {
+						if (len < 0) {
+							len = StaticHelper::parameters.at(param).size();
+						}
+						else {
+							if (StaticHelper::parameters.at(param).size() != len) {
+								throw Exception("PARAMETER SIZE ERR", "Parameter <" + param + "> at ControlEdge <" + ((control_edge *)it)->_name_clause->value + "> has different size");
+							}
 						}
 					}
+					else {
+						throw Exception(ExceptionType::NAME_NOT_FOUND, "Parameter <" + param + "> at ControlEdge <" + ((control_edge *)it)->_name_clause->value + "> not found");
+					}
+				}
+
+				for (int paramInd = 0; paramInd < len; paramInd++) {
+					ControlEdge tmpCE;
+					tmpCE.readTag(graph, (control_edge *)it);
+					for (std::string paramName : itParams->value) {
+						tmpCE.emplaceParam("%" + paramName + "%", StaticHelper::parameters.at(paramName)[paramInd]);
+					}
+					this->control_edges.push_back(tmpCE);
+				}
 			}
 			else {	//NORMAL EDGE
 				ControlEdge tmpControlEdge;
@@ -95,3 +141,91 @@ void Subgraph::readTag(graph* graph, subgraph* subgraph) {
 		}
 	}
 }
+
+void Subgraph::cyclic() {
+	std::map<std::string, InternalEdge*> * edges = new std::map<std::string, InternalEdge*>;
+	std::map<std::string, Vertex*> * verts = new std::map<std::string, Vertex*>;
+	std::map<std::string, std::set<std::string> >* parents = new std::map<std::string, std::set<std::string> >;
+	std::set<std::string> * cycles = new std::set<std::string>;
+	
+	for (InternalEdge &it_IE : this->internal_edges) {
+		(*edges)[it_IE.name] = &it_IE;
+	}
+	int count = 0;
+	Vertex * start;
+	for (Vertex &it_V : this->verticies) {
+		(*verts)[it_V.name] = &it_V;
+		bool isStart = true;
+		for (int i = 0; i < it_V.body.size() && isStart; i++) {
+			EmptyClass * ec = it_V.body.get(i);
+			if (ec->class_id) {
+				Exchange * ex = (Exchange *)ec;
+				for (Coord &c : ex->exchange_coords) {
+					if (!c.is_send) {
+						isStart = false;
+						break;
+					}
+				}
+			}
+		}
+		if (isStart) {
+			count++;
+			start = &it_V;
+		}
+	}
+	if (count > 1) {
+		throw Exception(ExceptionType::GRAPH_STRUCT_ERR, "Subgraph <" + this->name + "> has more than 1 (" + std::to_string(count) + ") initial Vertices");
+	}
+	else if (count == 0) {
+		throw Exception(ExceptionType::GRAPH_STRUCT_ERR, "Subgraph <" + this->name + "> has no initial Vertex");
+	}
+	
+	bool ret = cyclic(*start, *start, edges, verts, parents, cycles);
+	
+	if (ret) {
+		std::string names = "";
+		for (std::string vert : *cycles) {
+			names += vert + ", ";
+		}
+		names = names.substr(0, names.size() - 2);
+		Exception exception(ExceptionType::GRAPH_STRUCT_ERR, "Subgraph <" + this->name + "> has cycles at vertices: " + names);
+		
+		delete edges;
+		delete verts;
+		delete parents;
+		delete cycles;
+		
+		throw exception;
+	}
+	
+	delete edges;
+	delete verts;
+	delete parents;
+	delete cycles;
+}
+
+bool Subgraph::cyclic(Vertex& v, Vertex &p, std::map<std::string, InternalEdge*> * edges, std::map<std::string, Vertex*> * verts, std::map<std::string, std::set<std::string> >* parents, std::set<std::string> * cycles) {
+	if ((*parents)[v.name].count(p.name)) {
+		cycles->insert(p.name);
+		return true;
+	}
+	(*parents)[v.name].insert(p.name);
+	for (int i = 0; i < v.body.size(); i++) {
+		EmptyClass * ec = v.body.get(i);
+		if (ec->class_id) {
+			Exchange * ex = (Exchange *)ec;
+			for (Coord &c : ex->exchange_coords) {
+				if (c.is_send) {
+					if ((*edges).count(c.edge) > 0) {
+						InternalEdge *ie = (*edges)[c.edge];
+						if (cyclic(*((*verts)[ie->recv_coord.vertex]), v, edges, verts, parents, cycles)) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+	}
+	return false;
+}
+

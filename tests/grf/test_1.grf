@@ -1,6 +1,6 @@
 # test_1
-# Answer: OK
-# Description: common stress test with a lot of comments and other objects
+# Answer: BAD VERTEX ERR
+# Description: Vertex <generic> in subgraph <world1> for SEND at internal edge <my second internal edge> not found
 
 # hello
 # hello

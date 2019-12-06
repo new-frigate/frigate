@@ -1,7 +1,6 @@
 # test_2 
-# Answer: OK
-# Description: test with several vertex templates. Testing auto name generation for
-# vertices made with vertex templates
+# Answer: GRAPH STRUCT ERR
+# Description: Subgraph <sub_1> has more than 1 (4) initial Vertices
 
 <graph>
 

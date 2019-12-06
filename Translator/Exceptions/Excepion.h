@@ -7,7 +7,8 @@ enum ExceptionType {
 	NAME_DUPLICATION,
 	NAME_NOT_FOUND,
 	EDGE_NOT_FOUND,
-	VERTEX_NOT_FOUND
+	VERTEX_NOT_FOUND,
+	GRAPH_STRUCT_ERR
 };
 
 class Exception {
@@ -32,13 +33,16 @@ public:
 				this->name = "NAME DUPLICATION ERR";
 				break;
 			case NAME_NOT_FOUND:
-				this->name = "OBJECT OR COMPONENT NOT FOUND ERR";
+				this->name = "COMPONENT NOT FOUND ERR";
 				break;
 			case EDGE_NOT_FOUND:
 				this->name = "BAD EDGE ERR";
 				break;
 			case VERTEX_NOT_FOUND:
 				this->name = "BAD VERTEX ERR";
+				break;
+			case GRAPH_STRUCT_ERR:
+				this->name = "GRAPH STRUCT ERR";
 				break;
 		}
     }

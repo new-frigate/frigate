@@ -2,6 +2,8 @@
 #define TAG
 
 #include <string>
+#include <vector>
+#include <iostream>
 
 class Tag {
 
@@ -497,6 +499,58 @@ public:
 		this->nameOfClass = "CommaTag";
 	}
 	Tag *makeInst();
+};
+
+class ParameterTag : public Tag {
+public:
+	ParameterTag() {
+		this->nameOfClass = "ParameterTag";
+	}
+	Tag *makeInst();
+};
+
+class ParametersBeginTag : public Tag {
+public:
+	ParametersBeginTag() {
+		this->nameOfClass = "ParametersBeginTag";
+	}
+	Tag* makeInst();
+};
+
+class ParametersEndTag : public Tag {
+public:
+	ParametersEndTag() {
+		this->nameOfClass = "ParametersEndTag";
+	}
+	Tag* makeInst();
+};
+
+class ParameterNameTag : public Tag {
+public:
+	
+	std::string value;
+	
+	ParameterNameTag() {
+		this->nameOfClass = "ParameterNameTag";
+		this->letIterate = true;
+	}
+	Tag * makeInst();
+	bool falarm(int cur, std::string * content);
+	int doIterate(int cur, std::string * content);
+};
+
+class UsingTag : public Tag {
+public:
+	
+	std::vector<std::string> value;
+	
+	UsingTag() {
+		this->nameOfClass = "UsingTag";
+		this->letIterate = true;
+	}
+	Tag * makeInst();
+	bool falarm(int cur, std::string * content);
+	int doIterate(int cur, std::string * content);
 };
 
 #endif

@@ -42,3 +42,12 @@ void ControlEdge::readTag(graph* graph, control_edge* control_edge) {
 		}
 	}
 }
+
+void ControlEdge::emplaceParam(std::string param, std::string value) {
+	StaticHelper::replaceAll(this->name, param, value);
+	
+	StaticHelper::replaceAll(this->send_coord.exchange, param, value);
+	StaticHelper::replaceAll(this->send_coord.vertex, param, value);
+	StaticHelper::replaceAll(this->send_coord.edge, param, value);
+	StaticHelper::replaceAll(this->send_coord.subgraph, param, value);
+}

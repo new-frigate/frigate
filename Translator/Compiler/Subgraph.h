@@ -22,6 +22,11 @@ public:
 	Subgraph * addControlEdge(ControlEdge edge);
 	
 	void readTag(graph * graph, subgraph * subgraph);
+	
+	void cyclic();
+	
+private:
+	bool cyclic(Vertex& v, Vertex &p, std::map<std::string, InternalEdge*> * edges, std::map<std::string, Vertex*> * verts, std::map<std::string, std::set<std::string> >* parents, std::set<std::string> * cycles);
 };
 
 #endif /* SUBGRAPH_H */

@@ -18,6 +18,7 @@ public:
 	ExternalEdge * addRecvFragment(Fragment recv);
 	
 	void readTag(graph * graph, external_edge * external_edge);
+	void emplaceParam(std::string param, std::string value);
 };
 
 #endif /* EXTERNALEDGE_H */

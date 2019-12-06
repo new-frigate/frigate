@@ -17,7 +17,7 @@ public:
 	ControlEdge * addRecvFragment(Fragment recv);
 	
 	void readTag(graph * graph, control_edge * control_edge);
-
+	void emplaceParam(std::string param, std::string value);
 };
 
 #endif /* CONTROLEDGE_H */

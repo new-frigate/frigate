@@ -7,8 +7,8 @@
 #include <set>
 
 class Graph {
-private:
-	void findGoodPref(graph * graph);
+//private:
+	//void findGoodPref(graph * graph);
 public:
 	double version;
 	std::string header;

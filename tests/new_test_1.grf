@@ -24,11 +24,7 @@
 	</tail>
 
 	<parameters>
-		var i = ("1" "2" "3" "4")
-		var j = ("0" "1" "2" "0")
-		var k = ("1" "2" "3" "3")
-		var m = ("1" "2")
-		var l = ("2" "3")
+		
 	</parameters>
 	
 	main_subgraph = "sub_1"

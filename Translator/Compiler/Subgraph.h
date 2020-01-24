@@ -26,7 +26,7 @@ public:
 	void cyclic();
 	
 private:
-	bool cyclic(Vertex& v, Vertex &p, std::map<std::string, InternalEdge*> * edges, std::map<std::string, Vertex*> * verts, std::map<std::string, std::set<std::string> >* parents, std::set<std::string> * cycles);
+	bool cyclic(Vertex& v, Vertex &p, std::map<std::string, InternalEdge*> * edges, std::map<std::string, Vertex*> * verts, std::map<std::string, std::set<std::string> >* parents, std::string chain);
 };
 
 #endif /* SUBGRAPH_H */

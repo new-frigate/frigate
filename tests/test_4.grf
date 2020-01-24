@@ -1,6 +1,6 @@
 # test_4 
-# Answer: COMPONENT NOT FOUND ERR
-# Description: Vertex template <vert_temp_1> for vertex <sub_1_vert_2> not found
+# Answer: Vertex template <vert_temp_1> for vertex <sub_1_vert_2> not found 
+# Description: test with unexisting vertex template
 
 <graph>
 

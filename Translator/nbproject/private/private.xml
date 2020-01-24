@@ -7,9 +7,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/shiko/Documents/frigate/Translator/Compiler/Graph.h</file>
-            <file>file:/home/shiko/Documents/frigate/Translator/main.cpp</file>
-            <file>file:/home/shiko/Documents/frigate/Translator/Compiler/Graph.cpp</file>
+            <file>file:/home/r/Documents/frigate/Translator/Compiler/StaticHelper.h</file>
+            <file>file:/home/r/Documents/frigate/Translator/Compiler/crossvector.h</file>
+            <file>file:/home/r/Documents/frigate/Translator/Compiler/Graph.cpp</file>
+            <file>file:/home/r/Documents/frigate/Translator/main.cpp</file>
+            <file>file:/home/r/Documents/frigate/Translator/Compiler/Vertex.cpp</file>
+            <file>file:/home/r/Documents/frigate/Translator/Compiler/StaticHelper.cpp</file>
+            <file>file:/home/r/Documents/frigate/Translator/Compiler/Graph.h</file>
         </group>
     </open-files>
 </project-private>

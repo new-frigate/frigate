@@ -146,13 +146,13 @@ void Subgraph::cyclic() {
 	std::map<std::string, InternalEdge*> * edges = new std::map<std::string, InternalEdge*>;
 	std::map<std::string, Vertex*> * verts = new std::map<std::string, Vertex*>;
 	std::map<std::string, std::set<std::string> >* parents = new std::map<std::string, std::set<std::string> >;
-	std::set<std::string> * cycles = new std::set<std::string>;
+	//std::set<std::string> * cycles = new std::set<std::string>;
 	
 	for (InternalEdge &it_IE : this->internal_edges) {
 		(*edges)[it_IE.name] = &it_IE;
 	}
 	int count = 0;
-	Vertex * start;
+	std::vector<Vertex *> starts;
 	for (Vertex &it_V : this->verticies) {
 		(*verts)[it_V.name] = &it_V;
 		bool isStart = true;
@@ -170,18 +170,25 @@ void Subgraph::cyclic() {
 		}
 		if (isStart) {
 			count++;
-			start = &it_V;
+			starts.push_back(&it_V);
 		}
 	}
-	if (count > 1) {
-		throw Exception(ExceptionType::GRAPH_STRUCT_ERR, "Subgraph <" + this->name + "> has more than 1 (" + std::to_string(count) + ") initial Vertices");
-	}
-	else if (count == 0) {
+	if (count == 0) {
 		throw Exception(ExceptionType::GRAPH_STRUCT_ERR, "Subgraph <" + this->name + "> has no initial Vertex");
 	}
 	
-	bool ret = cyclic(*start, *start, edges, verts, parents, cycles);
-	
+	for (Vertex * start : starts) {
+		try {
+			cyclic(*start, *start, edges, verts, parents, "<" + (*start).name + ">");
+		}
+		catch (Exception ex) {
+			delete edges;
+			delete verts;
+			delete parents;
+			throw ex;
+		}
+	}
+	/*
 	if (ret) {
 		std::string names = "";
 		for (std::string vert : *cycles) {
@@ -193,21 +200,22 @@ void Subgraph::cyclic() {
 		delete edges;
 		delete verts;
 		delete parents;
-		delete cycles;
+		//delete cycles;
 		
 		throw exception;
 	}
-	
+	*/
 	delete edges;
 	delete verts;
 	delete parents;
-	delete cycles;
+	//delete cycles;
 }
 
-bool Subgraph::cyclic(Vertex& v, Vertex &p, std::map<std::string, InternalEdge*> * edges, std::map<std::string, Vertex*> * verts, std::map<std::string, std::set<std::string> >* parents, std::set<std::string> * cycles) {
+bool Subgraph::cyclic(Vertex& v, Vertex &p, std::map<std::string, InternalEdge*> * edges, std::map<std::string, Vertex*> * verts, std::map<std::string, std::set<std::string> >* parents, std::string chain) {
 	if ((*parents)[v.name].count(p.name)) {
-		cycles->insert(p.name);
-		return true;
+		chain + " -> <" + v.name + ">";
+		chain = chain.substr(chain.find("<" + p.name + ">", 0), chain.size() - 1);
+		throw Exception(ExceptionType::GRAPH_STRUCT_ERR, "Subgraph <" + this->name + "> has cycle: " + chain);
 	}
 	(*parents)[v.name].insert(p.name);
 	for (int i = 0; i < v.body.size(); i++) {
@@ -218,7 +226,8 @@ bool Subgraph::cyclic(Vertex& v, Vertex &p, std::map<std::string, InternalEdge*>
 				if (c.is_send) {
 					if ((*edges).count(c.edge) > 0) {
 						InternalEdge *ie = (*edges)[c.edge];
-						if (cyclic(*((*verts)[ie->recv_coord.vertex]), v, edges, verts, parents, cycles)) {
+						Vertex &tmp_v = *((*verts)[ie->recv_coord.vertex]);
+						if (cyclic(tmp_v, v, edges, verts, parents, chain + " -> <" + tmp_v.name + ">")) {
 							return true;
 						}
 					}

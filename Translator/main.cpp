@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
     if (argc == 3 && std::string(argv[1]) == "-f")
         name_of_file = argv[2];
     else
-        name_of_file = "../examples/test_3.grf";
+        name_of_file = "../examples/new_test_1.grf";
 	
     StaticHelper::location_prefix = name_of_file.substr(0, name_of_file.find_last_of("/") + 1);
     

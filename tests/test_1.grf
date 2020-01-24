@@ -1,6 +1,6 @@
 # test_1
-# Answer: BAD VERTEX ERR
-# Description: Vertex <generic> in subgraph <world1> for SEND at internal edge <my second internal edge> not found
+# Answer: OK
+# Description: common stress test with a lot of comments and other objects
 
 # hello
 # hello
@@ -187,14 +187,14 @@
 		<internal_edge>
 			name = "my second internal edge"
 			template = "first"
-			send= ("generic", "first")
+			send= ("abba", "first")
 			recv = ("bbb", "first")
 		</internal_edge>
 
 		<control_edge>
 			name = "my second control edge"
 			template = "first"
-			send = ("generic", "first")
+			send = ("abba", "first")
 		</control_edge>
 
 	</subgraph>

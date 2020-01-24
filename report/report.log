@@ -1,6 +1,6 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.10.15)  9 NOV 2019 18:25
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.10.15)  24 JAN 2020 20:39
 entering extended mode
- \write18 enabled.
+ restricted \write18 enabled.
  %&-line parsing enabled.
 **report.tex
 (./report.tex
@@ -508,24 +508,24 @@ File: t2acmr.fd 2001/08/11 v1.0a Computer Modern Cyrillic font definitions
 ))
 \openout1 = `report.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 26.
-LaTeX Font Info:    ... okay on input line 26.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 26.
-LaTeX Font Info:    ... okay on input line 26.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 26.
-LaTeX Font Info:    ... okay on input line 26.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 26.
-LaTeX Font Info:    ... okay on input line 26.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 26.
-LaTeX Font Info:    ... okay on input line 26.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 26.
-LaTeX Font Info:    ... okay on input line 26.
-LaTeX Font Info:    Checking defaults for T2A/cmr/m/n on input line 26.
-LaTeX Font Info:    ... okay on input line 26.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 26.
-LaTeX Font Info:    ... okay on input line 26.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 26.
-LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for T2A/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
  (/usr/local/texlive/2019/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count124
@@ -557,7 +557,7 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 \AtBeginShipoutBox=\box32
-Package hyperref Info: Link coloring OFF on input line 26.
+Package hyperref Info: Link coloring OFF on input line 28.
 
 (/usr/local/texlive/2019/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
@@ -567,9 +567,9 @@ Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
 \c@section@level=\count130
 )
-LaTeX Info: Redefining \ref on input line 26.
-LaTeX Info: Redefining \pageref on input line 26.
-LaTeX Info: Redefining \nameref on input line 26.
+LaTeX Info: Redefining \ref on input line 28.
+LaTeX Info: Redefining \pageref on input line 28.
+LaTeX Info: Redefining \nameref on input line 28.
 
 (./report.out) (./report.out)
 \@outlinefile=\write3
@@ -586,10 +586,10 @@ File: lstlang1.sty 2019/02/27 1.8b listings language file
 (/usr/local/texlive/2019/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2019/02/27 1.8b (Carsten Heinz)
 )
-<msu.png, id=16, 188.1429pt x 101.6598pt>
+<msu.png, id=20, 188.1429pt x 101.6598pt>
 File: msu.png Graphic file (type png)
 <use msu.png>
-Package pdftex.def Info: msu.png  used on input line 33.
+Package pdftex.def Info: msu.png  used on input line 35.
 (pdftex.def)             Requested size: 230.36061pt x 124.47151pt.
  [1
 
@@ -600,136 +600,102 @@ ng>]
 \openout4 = `report.toc'.
 
  [2]
-<pic_1.png, id=37, 621.32124pt x 428.60126pt>
+<pic_1.png, id=42, 621.32124pt x 428.60126pt>
 File: pic_1.png Graphic file (type png)
 <use pic_1.png>
-Package pdftex.def Info: pic_1.png  used on input line 83.
+Package pdftex.def Info: pic_1.png  used on input line 85.
 (pdftex.def)             Requested size: 322.50345pt x 222.46846pt.
  [3 <./pic_1.png>]
-Overfull \hbox (60.85591pt too wide) in paragraph at lines 97--98
-[][][][][][][][][][][][][][][][][][][][][][][][][][][] 
- []
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 257.
 
 
-Overfull \hbox (4.4692pt too wide) in paragraph at lines 122--123
-[][][][][][][][][][][][][][][][][][][] 
- []
-
-[4]
-Overfull \hbox (4.4692pt too wide) in paragraph at lines 160--161
-[][][][][][][][] 
- []
-
-[5] [6]
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 247.
-
- (/usr/local/texlive/2019/texmf-dist/tex/latex/base/omscmr.fd
+(/usr/local/texlive/2019/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 247.
-LaTeX Font Info:    Try loading font information for U+msa on input line 248.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 257.
+LaTeX Font Info:    Try loading font information for U+msa on input line 258.
 
 (/usr/local/texlive/2019/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 248.
+LaTeX Font Info:    Try loading font information for U+msb on input line 258.
 
 (/usr/local/texlive/2019/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-)
-Overfull \hbox (15.59358pt too wide) in paragraph at lines 259--260
-\T2A/cmr/m/n/12 со-дер-жит-с€ опи-са-ние всех под-гра-фов [][][], шаб-ло-нов ве
-р-шин [][][],
- []
-
-[7] [8]
-Overfull \hbox (3.12885pt too wide) in paragraph at lines 282--283
+) [4] [5]
+Overfull \hbox (3.12885pt too wide) in paragraph at lines 307--308
 \T2A/cmr/m/n/12 –ассмотрим струк-ту-ру бло-ка [][][]. ƒан-ный блок со-дер-жит о
 пи-са-ние внеш-
  []
 
 
-Overfull \hbox (45.54758pt too wide) in paragraph at lines 282--283
+Overfull \hbox (45.54758pt too wide) in paragraph at lines 307--308
 \T2A/cmr/m/n/12 внеш-не-го реб-ра [][][] от-ли-ча-ет-с€ от струк-ту-ры внут-рен
 -не-го реб-ра [][][]
  []
 
 
-Overfull \hbox (30.12361pt too wide) in paragraph at lines 285--286
+Overfull \hbox (30.12361pt too wide) in paragraph at lines 310--311
 []\T2A/cmr/m/n/12 ѕоле [] со-дер-жит ад-рес от-пра-ви-те-л€ в фор-ма-те: $\OT1/
 cmr/m/n/12 ("$\T2A/cmr/m/n/12 название под-гра-фа отправител€$\OT1/cmr/m/n/12 "
 $\T2A/cmr/m/n/12 ,
  []
 
 
-Overfull \hbox (29.40567pt too wide) in paragraph at lines 286--287
+Overfull \hbox (29.40567pt too wide) in paragraph at lines 311--312
 []\T2A/cmr/m/n/12 ѕоле [] ана-ло-гич-но со-дер-жит ад-рес от-пра-ви-те-л€: $\OT
 1/cmr/m/n/12 ("$\T2A/cmr/m/n/12 название под-гра-фа получател€$\OT1/cmr/m/n/12 
 "$\T2A/cmr/m/n/12 ,
  []
 
-[9]
-Overfull \hbox (0.587pt too wide) in paragraph at lines 327--328
+
+Overfull \hbox (0.587pt too wide) in paragraph at lines 315--316
 []\T2A/cmr/m/n/12 Ѕлок [][][] со-дер-жит в се-бе пе-ре-чис-ле-ние неко-то-ро-го
  чис-ла бло-ков [][][]
  []
 
 
-Overfull \hbox (5.26228pt too wide) in paragraph at lines 327--328
+Overfull \hbox (5.26228pt too wide) in paragraph at lines 315--316
 \T2A/cmr/m/n/12 --- фраг-мен-тов па-м€-ти, под-ле-жа-щих от-прав-ке по дан-но-м
 у реб-ру. Ѕлок [][][]
  []
 
-[10] [11] [12] [13] [14]
-Overfull \hbox (25.61421pt too wide) in paragraph at lines 520--521
-[][][][][][][][][][][][][][][][][][][][] 
+[6] [7] [8] [9] [10] [11]
+Overfull \hbox (20.56609pt too wide) in paragraph at lines 550--552
+\T2A/cmr/m/n/12 мер: [] --- про-из-вод-ный тэг, со-сто-€-щий из лек-сем [],
+ []
+
+[12]
+Overfull \hbox (17.89095pt too wide) in paragraph at lines 585--586
+\T2A/cmr/m/n/12 н€-ю-щие вер-ши-ны в раз-ных под-гра-фах. ѕо-л€ и ме-то-ды ана-
+ло-гич-но [],
  []
 
 
-Overfull \hbox (18.56587pt too wide) in paragraph at lines 521--522
-[][][][][][][][][][][][][][][][][][][]
+Overfull \hbox (31.17467pt too wide) in paragraph at lines 588--589
+\T2A/cmr/m/n/12 жит усло-вие вы-пол-не-ни€ под-гра-фа. ѕо-л€ [], [] и []
  []
 
-
-Overfull \hbox (25.61421pt too wide) in paragraph at lines 527--528
-[][][][][][][][][][][][][][][][][][][][] 
- []
-
-
-Overfull \hbox (18.56587pt too wide) in paragraph at lines 528--529
-[][][][][][][][][][][][][][][][][][][]
- []
-
-
-Overfull \hbox (25.61421pt too wide) in paragraph at lines 537--538
-[][][][][][][][][][][][][][][][][][][][] 
- []
-
-
-Overfull \hbox (18.56587pt too wide) in paragraph at lines 538--539
-[][][][][][][][][][][][][][][][][][][]
- []
-
-[15] [16]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 613.
- [17]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 613.
+[13]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 602.
+ [14]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 602.
  (./report.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 613.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 613.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 602.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 602.
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: 29BFE9CAA50EDF6E99D58416F3B3E884;489.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 613.
+(rerunfilecheck)             Checksum: 7B51E596D0E7D00428A81C5242C4E86F;628.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 602.
  ) 
 Here is how much of TeX's memory you used:
- 12723 strings out of 492616
- 172881 string characters out of 6129480
- 449438 words of memory out of 5000000
- 16053 multiletter control sequences out of 15000+600000
+ 12513 strings out of 492616
+ 169779 string characters out of 6129480
+ 446490 words of memory out of 5000000
+ 16078 multiletter control sequences out of 15000+600000
  14802 words of font info for 40 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 32i,5n,58p,1182b,1904s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 32i,5n,58p,1183b,1864s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2019/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t2a.enc
 }</usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb><
 /usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></
@@ -740,10 +706,10 @@ cal/texlive/2019/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/loca
 l/texlive/2019/texmf-dist/fonts/type1/public/cm-super/sfrm1440.pfb></usr/local/
 texlive/2019/texmf-dist/fonts/type1/public/cm-super/sfrm2074.pfb></usr/local/te
 xlive/2019/texmf-dist/fonts/type1/public/cm-super/sfti1440.pfb>
-Output written on report.pdf (17 pages, 241692 bytes).
+Output written on report.pdf (14 pages, 235288 bytes).
 PDF statistics:
- 681 PDF objects out of 1000 (max. 8388607)
- 643 compressed objects within 7 object streams
- 465 named destinations out of 1000 (max. 500000)
- 35 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 393 PDF objects out of 1000 (max. 8388607)
+ 361 compressed objects within 4 object streams
+ 230 named destinations out of 1000 (max. 500000)
+ 43 words of extra memory for PDF output out of 10000 (max. 10000000)
 

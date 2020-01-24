@@ -1,6 +1,6 @@
 # test_6 
-# Answer: FILE NOT FOUND: grf/test_6_code_file_2.cpp
-# Description: grf/test_6_code_file_2.cpp not found
+# Answer: FILE NOT FOUND: test_6_code_file_2.cpp 
+# Description: test with unexisting code file
 
 <graph>
 

@@ -39,15 +39,15 @@ void Graph::readTag(graph* graph) {
 			}
 		}
 	}
-	
+	/*
 	//FIND ALL VERTEX TEMPLATES NAMES
 	for (Tag * it : graph->_graph_entry->value) {
 		if (graph->actname(it) == "vertex_template") {
 			StaticHelper::vertex_templates.insert(((vertex_template *)it)->_name_clause->value);
 		}
-	}
+	}*/
 	
-	this->findGoodPref(graph);
+	//this->findGoodPref(graph);
 	
 	for (Tag * it : graph->_graph_entry->value) {
 		if (graph->actname(it) == "subgraph") {
@@ -191,8 +191,7 @@ void Graph::cyclic() {
 		it_subgraph.cyclic();
 	}
 }
-
-
+/*
 void Graph::findGoodPref(graph* graph) {
 	for (Tag * it : graph->_graph_entry->value) {
 		if (graph->actname(it) == "external_edge") {
@@ -223,7 +222,7 @@ void Graph::findGoodPref(graph* graph) {
 		}
 	}
 }
-
+*/
 void Graph::prettyPrint() {
     std::cout << "digraph " << this->version << " {" << std::endl;
     std::map<std::string, std::map<std::string, std::string> *> *sub_map = new std::map<std::string, std::map<std::string, std::string> *>();
